@@ -22,6 +22,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { STATUS_LABELS, PRIORITY_LABELS, PRIORITY_COLORS } from "../constants";
 import { formatDate, getRelativeTime, isOverdue, isDueToday } from "../utils/date.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 const COLUMNS = [
   { id: "todo", label: "To Do", color: "bg-slate-500", icon: Clock },
@@ -43,7 +44,7 @@ export default function ProjectDetailPage() {
     deleteProject,
     updateProject,
   } = useApp();
-
+  const { toast } = useToast();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [draggedTask, setDraggedTask] = useState(null);
@@ -113,12 +114,14 @@ export default function ProjectDetailPage() {
   const handleDeleteTask = (taskId) => {
     if (confirm("Are you sure you want to delete this task?")) {
       deleteTask(taskId);
+      toast.success("Task deleted successfully"); 
     }
   };
 
   const handleDeleteProject = () => {
     if (confirm("Are you sure you want to delete this project and all its tasks?")) {
       deleteProject(project.id);
+      toast.success("Project and all tasks deleted");
       navigate("/projects");
     }
   };
@@ -557,6 +560,7 @@ function TaskModal({ task, project, users, onClose, onSave }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave(formData);
+    toast.success(task ? "Task updated successfully!" : "Task created successfully!"); 
   };
 
   return (

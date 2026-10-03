@@ -23,7 +23,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const { toast } = useToast();
   if (currentUser) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -39,7 +39,7 @@ export default function LoginPage() {
 
     if (!result.ok) {
       setError(result.error);
-      toast.error(result.error); 
+      toast.error(result.error);
       setLoading(false);
       return;
     }

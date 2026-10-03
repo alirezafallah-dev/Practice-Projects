@@ -30,6 +30,7 @@ export default function ProjectsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const { toast } = useToast();
 
   // Filter and search projects
   const filteredProjects = useMemo(() => {
@@ -251,7 +252,12 @@ export default function ProjectsPage() {
                 project={project}
                 tasks={tasks}
                 users={users}
-                onDelete={deleteProject}
+                onDelete={(id) => {
+                  if (confirm("Are you sure you want to delete this project?")) {
+                    deleteProject(id);
+                    toast.success("Project deleted successfully"); // ✨
+                  }
+                }}
               />
             ))
           )}
@@ -455,6 +461,7 @@ function AddProjectModal({ onClose, onAdd, users }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     onAdd(formData);
+    toast.success(`Project "${formData.title}" created successfully!`); // ✨
     onClose();
   };
 

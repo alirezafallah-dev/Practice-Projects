@@ -12,10 +12,12 @@ import {
   Briefcase,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useToast } from "../context/ToastContext.jsx";
 
 export default function RegisterPage() {
   const { register, currentUser } = useApp();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,11 +44,13 @@ export default function RegisterPage() {
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 6) {
       setError("Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters");
       return;
     }
 
@@ -62,10 +66,12 @@ export default function RegisterPage() {
 
     if (!result.ok) {
       setError(result.error || "Registration failed");
+      toast.error(result.error || "Registration failed");
       setLoading(false);
       return;
     }
 
+    toast.success("Account created successfully! Please login.");
     navigate("/login");
   };
 

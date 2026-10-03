@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ROLE_LABELS } from "../constants";
+import { useToast } from "../context/ToastContext.jsx";
 
 // Helper functions - moved outside components for global access
 const getRoleIcon = (role) => {
@@ -425,6 +426,7 @@ function StatCard({ label, value, icon, gradient }) {
 // Add Member Modal
 function AddMemberModal({ onClose }) {
   const { register } = useApp();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -437,8 +439,10 @@ function AddMemberModal({ onClose }) {
     e.preventDefault();
     const result = register(formData);
     if (result.ok) {
+      toast.success(`${formData.name} added to the team successfully!`); 
       onClose();
     } else {
+      toast.error(result.error || "Failed to add member");
       setError(result.error || "Failed to add member");
     }
   };
