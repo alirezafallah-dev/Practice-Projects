@@ -16,18 +16,15 @@ export default function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
-          <Route path="/" element={<Navigate to="/projects" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
-          <Route
-            path="/projects/:projectId"
-            element={<ProjectDetailPage />}
-          />
+          <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
           <Route path="/users" element={<UsersPage />} />
         </Route>
       </Route>
 
-      <Route path="*" element={<Navigate to="/projects" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }
