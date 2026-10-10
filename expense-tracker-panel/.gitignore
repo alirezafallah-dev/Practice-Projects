@@ -1,0 +1,22 @@
+# برای modern-blog
+@"
+node_modules/
+node-modules/
+.next/
+out/
+build/
+.env*.local
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+"@ | Out-File -FilePath "modern-blog\.gitignore" -Encoding utf8
+
+# برای expense-tracker-panel
+@"
+node_modules/
+node-modules/
+dist/
+build/
+.env*.local
+*.tsbuildinfo
+"@ | Out-File -FilePath "expense-tracker-panel\.gitignore" -Encoding utf8
