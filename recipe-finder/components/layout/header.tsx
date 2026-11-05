@@ -1,6 +1,6 @@
 "use client";
-
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useFavorites } from "@/context/favorites-context";
@@ -37,11 +37,15 @@ export default function Header() {
     <header className="frost sticky top-0 z-50 border-b border-linen/80 dark:border-white/10">
       <div className="container-app flex h-16 items-center justify-between gap-3 md:h-20">
         {/* Editorial logo */}
-        <Link href="/" className="flex shrink-0 flex-col leading-none">
-          <span className="font-display text-2xl font-semibold tracking-tight text-ink dark:text-zinc-100">
-            {APP_NAME}
-          </span>
-          <span className="micro-label mt-1">{APP_TAGLINE.toUpperCase()}</span>
+        <Link href="/" className="flex shrink-0 items-center">
+          <Image
+            src="/images/logo.png" 
+            alt="Savor Recipe Finder Logo"
+            width={120} 
+            height={40}  
+            className="h-auto w-auto max-w-[120px] object-contain"
+            priority 
+          />
         </Link>
 
         {/* Capsule navigation — desktop */}
