@@ -1,7 +1,5 @@
-/** گزینه‌های مرتب‌سازی نتایج جستجو */
 export type SortOption = "relevance" | "popularity" | "healthiness" | "quickest";
 
-/** خلاصه دستور غذا — برای کارت‌های لیست نتایج */
 export interface RecipeSummary {
   id: number;
   title: string;
@@ -28,7 +26,6 @@ export interface RecipeIngredient {
   amount: number | null;
   unit: string;
   image: string | null;
-  /** NEW: measurements for metric / US toggling */
   measures?: {
     metric: { amount: number; unit: string };
     us: { amount: number; unit: string };
@@ -50,7 +47,6 @@ export interface RecipeDetail extends RecipeSummary {
   instructions: RecipeStep[];
 }
 
-/** آیتم ذخیره‌شده در LocalStorage */
 export interface FavoriteRecipe {
   id: number;
   title: string;
@@ -74,6 +70,4 @@ export interface SearchResponse {
   page: number;
   pageSize: number;
   totalPages: number;
-  /** true یعنی داده نمونه است (کلید API تنظیم نشده) */
-  mock?: boolean;
 }

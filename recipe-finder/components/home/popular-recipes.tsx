@@ -3,7 +3,6 @@ import Link from "next/link";
 import MiniFavoriteButton from "@/components/recipes/mini-favorite-button";
 import { ArrowRightIcon, ArrowUpRightIcon, ClockIcon, UsersIcon, FlameIcon } from "@/components/ui/icons";
 import { PLACEHOLDER_IMAGE } from "@/lib/constants";
-import { mockSearch } from "@/lib/mock";
 import { searchRecipes } from "@/lib/spoonacular";
 import { formatMinutes, translateDishType, truncate } from "@/lib/utils";
 import type { RecipeSummary } from "@/types";
@@ -12,8 +11,10 @@ async function getPopularRecipes() {
   try {
     const res = await searchRecipes({ sort: "popularity", pageSize: 3 });
     if (res.results.length >= 3) return res.results.slice(0, 3);
-  } catch {}
-  return mockSearch({ sort: "popularity", pageSize: 3 }).results.slice(0, 3);
+  } catch {
+    return [];
+  }
+  return [];
 }
 
 function FeatureCard({ recipe }: { recipe: RecipeSummary }) {

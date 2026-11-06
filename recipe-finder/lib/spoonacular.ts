@@ -1,9 +1,4 @@
-/**
- * Spoonacular access layer — server-side only.
- * The API key never reaches the client.
- */
 import { PAGE_SIZE } from "./constants";
-import { mockDetail, mockSearch } from "./mock";
 import { normalizeIngredients, sortResults } from "./search-utils";
 import { stripHtml } from "./utils";
 import type {
@@ -66,8 +61,6 @@ async function spoonacularFetch<T>(
   return (await res.json()) as T;
 }
 
-/* ---------- Defensive mapping of raw API payloads ---------- */
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapSummary(raw: any): RecipeSummary {
   const toStr = (v: unknown) => (typeof v === "string" ? v : "");
@@ -99,7 +92,6 @@ function mapSummary(raw: any): RecipeSummary {
 function mapDetail(raw: any): RecipeDetail {
   const base = mapSummary(raw);
 
-  // 1) Structured steps from analyzedInstructions (with optional duration)
   const steps: RecipeStep[] = [];
   if (Array.isArray(raw?.analyzedInstructions)) {
     for (const block of raw.analyzedInstructions) {
@@ -118,7 +110,6 @@ function mapDetail(raw: any): RecipeDetail {
     }
   }
 
-  // 2) Fallback: plain/HTML instructions string split into lines
   if (steps.length === 0 && typeof raw?.instructions === "string" && raw.instructions.trim()) {
     const text = stripHtml(
       raw.instructions.replace(/<\/(p|li|h\d)>/gi, "\n").replace(/<li[^>]*>/gi, "\n"),
@@ -132,7 +123,6 @@ function mapDetail(raw: any): RecipeDetail {
     );
   }
 
-  // 3) Ingredients with metric/US measures for the Pantry checklist
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ingredients: RecipeIngredient[] = Array.isArray(raw?.extendedIngredients)
     ? raw.extendedIngredients.map((ing: any, idx: number) => ({
@@ -162,7 +152,6 @@ function mapDetail(raw: any): RecipeDetail {
       }))
     : [];
 
-  // 4) Calories from nutrition (includeNutrition=true)
   const cal = Array.isArray(raw?.nutrition?.nutrients)
     ? raw.nutrition.nutrients.find((n: any) => n?.name === "Calories")
     : undefined;
@@ -178,11 +167,10 @@ function mapDetail(raw: any): RecipeDetail {
   };
 }
 
-/* ---------- Public API ---------- */
-
-/** complexSearch: query + includeIngredients + diet + type + pagination + sorting */
 export async function searchRecipes(input: SearchInput): Promise<SearchResponse> {
-  if (!hasApiKey()) return { ...mockSearch(input), mock: true };
+  if (!hasApiKey()) {
+    throw new ApiError("SPOONACULAR_API_KEY is not configured. Please add your API key to .env.local", 500);
+  }
 
   const page = Math.max(1, Math.floor(input.page ?? 1));
   const pageSize = Math.min(48, Math.max(1, input.pageSize ?? PAGE_SIZE));
@@ -211,14 +199,15 @@ export async function searchRecipes(input: SearchInput): Promise<SearchResponse>
     page,
     pageSize,
     totalPages: Math.max(1, Math.ceil(totalResults / pageSize)),
-    mock: false,
   };
 }
 
-/** Full recipe details by id (cached 24h) — SINGLE definition */
 export async function getRecipeById(id: number): Promise<RecipeDetail | null> {
   if (!Number.isFinite(id) || id <= 0) return null;
-  if (!hasApiKey()) return mockDetail(id);
+  
+  if (!hasApiKey()) {
+    throw new ApiError("SPOONACULAR_API_KEY is not configured. Please add your API key to .env.local", 500);
+  }
 
   const raw = await spoonacularFetch<unknown>(
     `/recipes/${encodeURIComponent(String(id))}/information`,

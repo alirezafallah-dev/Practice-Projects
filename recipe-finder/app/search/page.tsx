@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import FilterBar from "@/components/recipes/filter-bar";
 import Pagination from "@/components/recipes/pagination";
 import RecipeGrid from "@/components/recipes/recipe-grid";
-import { EmptyState, ErrorState, MockBanner } from "@/components/ui/states";
+import { EmptyState, ErrorState } from "@/components/ui/states";
 import { DIETS, MEAL_TYPES, SORT_OPTIONS } from "@/lib/constants";
 import { ApiError, searchRecipes } from "@/lib/spoonacular";
 import { pickValid } from "@/lib/utils";
@@ -61,11 +61,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           </p>
         )}
       </header>
-
       <FilterBar query={query} ingredients={ingredients} diet={diet} type={type} sort={sort} />
-
-      {data?.mock && <MockBanner />}
-
       {errorMessage ? (
         <ErrorState message={errorMessage} retryHref="/search" />
       ) : data && data.results.length > 0 ? (
