@@ -64,8 +64,6 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
 
       <FilterBar query={query} ingredients={ingredients} diet={diet} type={type} sort={sort} />
 
-      {data?.mock && <MockBanner />}
-
       {errorMessage ? (
         <ErrorState message={errorMessage} retryHref="/search" />
       ) : data && data.results.length > 0 ? (

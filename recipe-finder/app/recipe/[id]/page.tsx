@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import DetailActions from "@/components/recipe/detail-actions";
 import PantryChecklist from "@/components/recipe/pantry-checklist";
-import Preparation from "@/components/recipes/pagination";
+import Preparation from "@/components/recipes/preparation";
 import { MockBanner, ErrorState } from "@/components/ui/states";
 import {
   CameraIcon,

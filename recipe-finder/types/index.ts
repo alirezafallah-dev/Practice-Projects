@@ -74,6 +74,4 @@ export interface SearchResponse {
   page: number;
   pageSize: number;
   totalPages: number;
-  /** true یعنی داده نمونه است (کلید API تنظیم نشده) */
-  mock?: boolean;
 }
