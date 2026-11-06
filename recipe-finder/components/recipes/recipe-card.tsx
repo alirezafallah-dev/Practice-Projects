@@ -1,67 +1,57 @@
 import Image from "next/image";
 import Link from "next/link";
-import MiniFavoriteButton from "./mini-favorite-button";
+import FavoriteButton from "@/components/recipes/favorite-button";
 import { PLACEHOLDER_IMAGE } from "@/lib/constants";
 import { formatMinutes, truncate } from "@/lib/utils";
-import { ArrowRightIcon, ClockIcon, LeafIcon, StarIcon } from "@/components/ui/icons";
+import { ClockIcon, StarIcon, UsersIcon, ArrowRightIcon } from "@/components/ui/icons";
 import type { RecipeSummary } from "@/types";
 
 export default function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
+  const rating = Math.round(((recipe.spoonacularScore ?? 0) / 100) * 5 * 10) / 10;
   return (
-    <article className="card card-hover group flex flex-col overflow-hidden">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-t-3xl bg-oatmeal dark:bg-ink-800">
+    <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-ecru bg-porcelain shadow-rest transition hover:-translate-y-1 hover:shadow-lift dark:border-white/10 dark:bg-white/5">
+      <div className="relative aspect-[4/3] overflow-hidden bg-canvas dark:bg-white/5">
         <Image
           src={recipe.image || PLACEHOLDER_IMAGE}
           alt={recipe.title}
           fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover transition-transform duration-[400ms] group-hover:scale-[1.02]"
+          sizes="(max-width:640px) 100vw,(max-width:1024px) 50vw,25vw"
+          className="object-cover transition duration-500 group-hover:scale-105"
         />
-        <MiniFavoriteButton id={recipe.id} title={recipe.title} image={recipe.image} className="absolute left-3 top-3" />
-        {recipe.readyInMinutes ? (
-          <span className="pill frost absolute bottom-3 right-3 text-ink dark:text-zinc-100">
-            <ClockIcon width={12} height={12} />
-            {formatMinutes(recipe.readyInMinutes)}
-          </span>
-        ) : null}
+        <Link href={`/recipe/${recipe.id}`} className="absolute inset-0 z-10" aria-label={`View ${recipe.title}`} />
+        <FavoriteButton
+          recipe={{ id: recipe.id, title: recipe.title, image: recipe.image }}
+          variant="floating"
+          size="sm"
+          className="absolute right-3 top-3 z-20"
+        />
+        <span className="absolute left-3 top-3 z-20 inline-flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-bold text-espresso backdrop-blur dark:bg-black/50 dark:text-zinc-100">
+          <ClockIcon width={12} height={12} />
+          {formatMinutes(recipe.readyInMinutes)}
+        </span>
       </div>
-
       <div className="flex flex-1 flex-col gap-2 p-5">
-        <h3 className="font-display line-clamp-2 text-lg font-medium leading-7">{recipe.title}</h3>
-
-        <p className="line-clamp-2 text-sm leading-6 text-mineral dark:text-zinc-400">
-          {truncate(recipe.summary, 100) || "Open the full recipe for ingredients and step-by-step instructions."}
+        <p className="flex items-center gap-1 text-xs font-bold text-espresso dark:text-zinc-100">
+          <StarIcon width={13} height={13} className="text-apricot" fill="currentColor" />
+          {rating}
+          <span className="font-medium text-mineral">({(recipe.aggregateLikes ?? 0).toLocaleString("en-US")})</span>
         </p>
-
-        <div className="mt-1 flex flex-wrap items-center gap-1.5">
-          {recipe.vegan && <Badge className="bg-sage-500/10 text-sage-700 dark:text-sage-300"><LeafIcon width={12} height={12} /> Vegan</Badge>}
-          {!recipe.vegan && recipe.vegetarian && (
-            <Badge className="bg-sage-500/10 text-sage-700 dark:text-sage-300"><LeafIcon width={12} height={12} /> Vegetarian</Badge>
-          )}
-          {recipe.glutenFree && <Badge className="bg-clay-500/10 text-clay-700 dark:text-clay-300">Gluten-Free</Badge>}
-          {recipe.healthScore !== null && recipe.healthScore >= 70 && (
-            <Badge className="bg-clay-500/10 text-clay-700 dark:text-clay-300"><StarIcon width={12} height={12} /> Health {recipe.healthScore}</Badge>
-          )}
-        </div>
-
-        <div className="mt-auto pt-3">
-          <Link
-            href={`/recipe/${recipe.id}`}
-            className="flex w-full items-center justify-center gap-1.5 rounded-2xl bg-sage-700 px-4 py-2.5 text-sm font-semibold text-alabaster shadow-rest transition hover:-translate-y-px hover:bg-sage-800 hover:shadow-lift"
-          >
-            View Details
-            <ArrowRightIcon width={15} height={15} className="transition-transform group-hover:translate-x-0.5" />
+        <h3 className="font-display line-clamp-2 text-lg font-bold leading-6 text-espresso dark:text-zinc-50">
+          <Link href={`/recipe/${recipe.id}`} className="transition hover:text-terracotta">{recipe.title}</Link>
+        </h3>
+        <p className="line-clamp-2 text-sm leading-6 text-espresso-700 dark:text-zinc-400">
+          {truncate(recipe.summary, 110) || "A wholesome dish from our test kitchen."}
+        </p>
+        <div className="mt-auto flex items-center justify-between pt-3">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-mineral">
+            <UsersIcon width={14} height={14} />
+            {recipe.servings ? `${recipe.servings} Servings` : "—"}
+          </span>
+          <Link href={`/recipe/${recipe.id}`} className="inline-flex items-center gap-1 text-xs font-bold text-terracotta transition hover:gap-2">
+            Cook Dish <ArrowRightIcon width={14} height={14} />
           </Link>
         </div>
       </div>
     </article>
-  );
-}
-
-function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <span className={`pill px-2.5 py-0.5 text-[10px] ${className ?? ""}`}>
-      {children}
-    </span>
   );
 }

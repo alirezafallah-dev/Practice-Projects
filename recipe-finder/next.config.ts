@@ -1,15 +1,16 @@
-// فایل: next.config.ts
+// next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    unoptimized: true, // دور زدن کامل ارورهای DNS و پردازش تصویر
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "img.spoonacular.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "placehold.co" },
     ],
   },
-  allowedDevOrigins: ['127.0.0.1'], // رفع ارور HMR
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
 };
 
 export default nextConfig;

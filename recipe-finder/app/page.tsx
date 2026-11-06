@@ -1,14 +1,22 @@
+// app/page.tsx
 import Hero from "@/components/home/hero";
-import { EditorsEdit, Manifesto, SeasonalBand, TasteAtlas } from "@/components/home/sections";
+import {
+  CuisineSection,
+  TrendingSection,
+  HarvestBanner,
+  HowItWorks,
+  TestimonialSection,
+} from "@/components/home/sections";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <SeasonalBand />
-      <EditorsEdit />
-      <TasteAtlas />
-      <Manifesto />
+      <CuisineSection />
+      <TrendingSection />
+      <HarvestBanner />
+      <HowItWorks />
+      <TestimonialSection />
     </>
   );
 }

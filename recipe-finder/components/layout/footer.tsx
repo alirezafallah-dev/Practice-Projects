@@ -1,68 +1,116 @@
+// components/layout/footer.tsx
 import Link from "next/link";
-import NewsletterForm from "./newsletter";
 import { APP_NAME } from "@/lib/constants";
-import { BookOpenIcon } from "@/components/ui/icons";
+import { ArrowRightIcon, ChefHatIcon, MailIcon } from "@/components/ui/icons";
 
-const INDEX_LINKS = [
-  { href: "/search", label: "Seasonal Archives" },
-  { href: "/search", label: "Pantry Ingredient Index" },
-  { href: "/favorites", label: "Curated Recipe Boxes" },
-  { href: "/about", label: "The Editorial Manifesto" },
-  { href: "/about", label: "Culinary Standards & Ethics" },
+const EXPLORE = [
+  { label: "Seasonal Picks", href: "/search?query=seasonal" },
+  { label: "Saved Dishes", href: "/favorites" },
+  { label: "30-Min Dinners", href: "/search?query=30%20minute" },
+  { label: "Pantry Staples", href: "/search?query=pantry" },
+];
+
+const CULINARY = [
+  { label: "Our Philosophy", href: "/about" },
+  { label: "Chef Guidelines", href: "/about" },
+  { label: "Kitchen Conversions", href: "/about" },
+  { label: "Nutrition Guide", href: "/about" },
 ];
 
 export default function Footer() {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="border-t border-linen bg-oatmeal dark:border-white/10 dark:bg-ink-900">
-      <div className="container-app grid grid-cols-1 gap-10 py-14 md:grid-cols-2 lg:grid-cols-[1.2fr_1fr_0.9fr] lg:gap-16">
-        <div>
-          <p className="font-display text-3xl font-semibold">{APP_NAME}</p>
-          <p className="mt-4 max-w-sm text-sm leading-7 text-mineral dark:text-zinc-400">
-            A curated publication celebrating slow gastronomy, seasonal harvest, and mindful recipe
-            composition. Transposing independent culinary journalism into tactile living kitchen companions.
-          </p>
-          <p className="pill mt-6 border border-linen bg-white text-[10px] tracking-[0.12em] text-sage-700 dark:border-white/10 dark:bg-white/5 dark:text-sage-300">
-            ✦ James Beard Digital Honoree • 2024
+    <footer className="border-t border-linen bg-ecru/70 dark:border-white/10 dark:bg-ink-950">
+      <div className="container-app grid grid-cols-1 gap-10 py-12 md:grid-cols-2 lg:grid-cols-4">
+        <div className="space-y-4">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-terracotta text-white shadow-lift">
+              <ChefHatIcon width={20} height={20} />
+            </span>
+            <span className="font-display text-xl font-extrabold text-ink dark:text-zinc-50">
+              {APP_NAME}
+            </span>
+          </Link>
+
+          <p className="max-w-sm text-sm leading-7 text-espresso-700 dark:text-zinc-400">
+            Handcrafted recipes, artisanal ingredients, and effortless everyday
+            cooking designed for curious food lovers and home chefs.
           </p>
         </div>
 
         <div>
-          <h2 className="micro-label">The Weekly Gastronome</h2>
-          <p className="mt-3 text-sm leading-7 text-mineral dark:text-zinc-400">
-            Receive Sunday morning dispatches featuring three seasonal pantry recipes, market notes,
-            and technique essays.
-          </p>
-          <div className="mt-5">
-            <NewsletterForm />
-          </div>
-        </div>
-
-        <div>
-          <h2 className="micro-label">Editions & Index</h2>
-          <ul className="mt-4 space-y-2.5">
-            {INDEX_LINKS.map((l) => (
-              <li key={l.label}>
-                <Link href={l.href} className="text-sm text-mineral transition hover:text-sage-700 dark:text-zinc-400 dark:hover:text-sage-300">
-                  {l.label}
+          <p className="micro-label mb-4 text-terracotta">Explore</p>
+          <ul className="space-y-3">
+            {EXPLORE.map((item) => (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  className="text-sm font-semibold text-espresso-700 transition hover:text-terracotta dark:text-zinc-300"
+                >
+                  {item.label}
                 </Link>
               </li>
             ))}
           </ul>
         </div>
+
+        <div>
+          <p className="micro-label mb-4 text-terracotta">Culinary</p>
+          <ul className="space-y-3">
+            {CULINARY.map((item) => (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  className="text-sm font-semibold text-espresso-700 transition hover:text-terracotta dark:text-zinc-300"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <p className="micro-label mb-4 text-terracotta">Fresh in Your Inbox</p>
+          <p className="mb-4 text-sm leading-7 text-espresso-700 dark:text-zinc-400">
+            Join 45,000+ cooks receiving our Sunday supper notes, seasonal
+            produce charts, and spice pairing secrets.
+          </p>
+
+          <div className="flex items-center gap-2 rounded-full border border-linen bg-porcelain p-1.5 shadow-rest dark:border-white/10 dark:bg-white/5">
+            <span className="pl-3 text-mineral">
+              <MailIcon width={16} height={16} />
+            </span>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="w-full bg-transparent px-2 text-sm outline-none placeholder:text-mineral/70 dark:text-zinc-100"
+            />
+            <button
+              type="button"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-terracotta px-4 py-2 text-xs font-bold text-white transition hover:bg-terracotta-600"
+            >
+              Subscribe
+              <ArrowRightIcon width={14} height={14} />
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="border-t border-linen/80 dark:border-white/10">
-        <div className="container-app flex flex-col items-center justify-between gap-3 py-6 md:flex-row">
-          <p className="micro-label flex items-center gap-2">
-            <BookOpenIcon width={13} height={13} className="text-clay-500" />
-            © 2024 {APP_NAME} Publishing Guild. Handcrafted with reverence for natural ingredients.
-          </p>
-          <div className="flex gap-6">
-            {["Privacy Policy", "Terms of Service", "Press & Licensing"].map((t) => (
-              <span key={t} className="micro-label cursor-pointer transition hover:text-ink dark:hover:text-zinc-100">
-                {t}
-              </span>
-            ))}
+        <div className="container-app flex flex-col items-center justify-between gap-3 py-5 text-xs font-semibold text-mineral md:flex-row dark:text-zinc-400">
+          <p>© {year} Recipe Finder Studio. Wholesome kitchen creations.</p>
+          <div className="flex items-center gap-4">
+            <Link href="/about" className="transition hover:text-terracotta">
+              Privacy Policy
+            </Link>
+            <Link href="/about" className="transition hover:text-terracotta">
+              Terms of Service
+            </Link>
+            <Link href="/about" className="transition hover:text-terracotta">
+              Cookie Preferences
+            </Link>
           </div>
         </div>
       </div>

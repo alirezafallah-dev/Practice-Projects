@@ -1,338 +1,291 @@
 import Image from "next/image";
 import Link from "next/link";
-import MiniFavoriteButton from "@/components/recipes/mini-favorite-button";
-import {
-  ArrowRightIcon,
-  ArrowUpRightIcon,
-  BookOpenIcon,
-  ClockIcon,
-  UsersIcon,
-} from "@/components/ui/icons";
+import FavoriteButton from "@/components/recipes/favorite-button";
+import { cn, truncate } from "@/lib/utils";
 import { PLACEHOLDER_IMAGE } from "@/lib/constants";
 import { searchRecipes } from "@/lib/spoonacular";
-import { cn, formatMinutes, translateDishType, truncate } from "@/lib/utils";
 import type { RecipeSummary } from "@/types";
+import {
+  ArrowRightIcon,
+  BasketIcon,
+  ChefHatIcon,
+  ClockIcon,
+  CroissantIcon,
+  CurryIcon,
+  FlameIcon,
+  LeafIcon,
+  OliveIcon,
+  PizzaIcon,
+  RamenIcon,
+  SlidersIcon,
+  SparklesIcon,
+  StarIcon,
+  TacoIcon,
+  UsersIcon,
+  UtensilsIcon,
+} from "@/components/ui/icons";
 
-export async function getPicks(): Promise<RecipeSummary[]> {
-    try {
-        const res = await searchRecipes({ sort: "popularity", pageSize: 3 });
-        return res.results.slice(0, 3);
-    } catch {
-        return [];
-    }
+async function getTrending(): Promise<RecipeSummary[]> {
+  try {
+    const res = await searchRecipes({ sort: "popularity", pageSize: 4 });
+    return res.results.slice(0, 4);
+  } catch {
+    return [];
+  }
 }
 
-/* ================= Seasonal index band ================= */
-export function SeasonalBand() {
-  return (
-    <div className="border-y border-linen dark:border-white/10">
-      <div className="container-app flex items-center justify-between py-4">
-        <span className="micro-label">Seasonal Index — No. 44</span>
-        <span aria-hidden className="text-clay-500">❋</span>
-        <span className="micro-label">Updated Today</span>
-      </div>
-    </div>
-  );
+function difficultyOf(min: number | null) {
+  if (min == null || min <= 25)
+    return { label: "Easy", tone: "bg-rosemary/10 text-rosemary dark:bg-rosemary/20 dark:text-rosemary-200" };
+  if (min <= 40)
+    return { label: "Medium", tone: "bg-apricot/20 text-terracotta-700 dark:text-apricot-200" };
+  return { label: "Hard", tone: "bg-terracotta/10 text-terracotta-700 dark:text-terracotta-200" };
 }
 
-/* ================= Feature card ================= */
-function FeatureCard({ recipe }: { recipe: RecipeSummary }) {
+const CUISINES = [
+  { name: "Italian", count: "380+", Icon: PizzaIcon },
+  { name: "Japanese", count: "245+", Icon: RamenIcon },
+  { name: "Mexican", count: "190+", Icon: TacoIcon },
+  { name: "Mediterranean", count: "410+", Icon: OliveIcon },
+  { name: "Indian", count: "315+", Icon: CurryIcon },
+  { name: "French", count: "170+", Icon: CroissantIcon },
+];
+
+export function CuisineSection() {
   return (
-    <article className="card card-hover flex flex-col overflow-hidden">
-      <div className="relative aspect-[16/10] overflow-hidden rounded-t-3xl bg-oatmeal dark:bg-ink-800">
-        <Image
-          src={recipe.image || PLACEHOLDER_IMAGE}
-          alt={recipe.title}
-          fill
-          sizes="(max-width: 1024px) 100vw, 50vw"
-          className="object-cover transition-transform duration-[400ms] hover:scale-[1.02]"
-        />
-        <div className="absolute right-4 top-4 flex flex-wrap gap-2">
-          <span className="pill frost text-ink dark:text-zinc-100">Dish of the Week</span>
-          {recipe.dishTypes[0] && (
-            <span className="pill bg-clay-500/90 text-white">{translateDishType(recipe.dishTypes[0])}</span>
-          )}
-        </div>
-        <MiniFavoriteButton id={recipe.id} title={recipe.title} image={recipe.image} className="absolute left-4 top-4" />
-      </div>
-
-      <div className="flex flex-1 flex-col p-6 md:p-8">
-        <div className="flex flex-wrap items-center gap-4">
-          <span className="micro-label flex items-center gap-1.5">
-            <ClockIcon width={13} height={13} className="text-sage-600" />
-            {formatMinutes(recipe.readyInMinutes)}
-          </span>
-          <span className="micro-label flex items-center gap-1.5">
-            <UsersIcon width={13} height={13} className="text-sage-600" />
-            {recipe.servings ? `${recipe.servings} servings` : "—"}
-          </span>
-        </div>
-
-        <h3 className="font-display mt-4 text-2xl font-medium leading-snug text-ink dark:text-zinc-50 md:text-3xl">
-          {recipe.title}
-        </h3>
-        <p className="mt-3 line-clamp-3 text-sm leading-7 text-mineral dark:text-zinc-400">
-          {truncate(recipe.summary, 160) || "A seasonal composition, tested across six kitchen variants."}
-        </p>
-
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-linen pt-5 dark:border-white/10">
-          <div className="flex items-center gap-3">
-            <span className="font-display flex h-10 w-10 items-center justify-center rounded-full border border-linen bg-oatmeal text-lg dark:border-white/10 dark:bg-ink-800">
-              {(recipe.sourceName ?? "S").charAt(0)}
-            </span>
-            <div>
-              <p className="text-xs font-bold text-ink dark:text-zinc-100">Recipe by {recipe.sourceName ?? "the SAVOR Guild"}</p>
-              <p className="micro-label mt-0.5">Guild Curator, Test Kitchen</p>
-            </div>
-          </div>
-          <Link href={`/recipe/${recipe.id}`} className="btn-accent">
-            Inspect Step-by-Step
-            <ArrowRightIcon width={14} height={14} />
-          </Link>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-/* ================= Side card ================= */
-function SideCard({ recipe }: { recipe: RecipeSummary }) {
-  return (
-    <article className="card card-hover flex-1 overflow-hidden">
-      <Link href={`/recipe/${recipe.id}`} className="relative block aspect-[16/9] overflow-hidden rounded-t-3xl bg-oatmeal dark:bg-ink-800">
-        <Image
-          src={recipe.image || PLACEHOLDER_IMAGE}
-          alt={recipe.title}
-          fill
-          sizes="(max-width: 1024px) 100vw, 50vw"
-          className="object-cover transition-transform duration-[400ms] hover:scale-[1.02]"
-        />
-        {recipe.dishTypes[0] && (
-          <span className="pill absolute right-4 top-4 bg-sage-700/90 text-alabaster">
-            {translateDishType(recipe.dishTypes[0])}
-          </span>
-        )}
-        {recipe.readyInMinutes && (
-          <span className="pill frost absolute bottom-4 left-4 text-ink dark:text-zinc-100">
-            <ClockIcon width={12} height={12} />
-            {recipe.readyInMinutes} mins
-          </span>
-        )}
-      </Link>
-
-      <div className="p-6">
-        <p className="micro-label text-clay-600 dark:text-clay-300">
-          {recipe.cuisines[0] ?? translateDishType(recipe.dishTypes[0] ?? "") ?? "Seasonal Cooking"}
-        </p>
-        <h3 className="font-display mt-2 line-clamp-2 text-xl font-medium leading-snug text-ink dark:text-zinc-50">
-          {recipe.title}
-        </h3>
-        <p className="mt-2 line-clamp-2 text-sm leading-7 text-mineral dark:text-zinc-400">
-          {truncate(recipe.summary, 110)}
-        </p>
-        <div className="mt-5 flex items-center justify-between">
-          <span className="micro-label">
-            {recipe.servings ? `${recipe.servings} Servings` : "—"} • Score {recipe.spoonacularScore ?? 0}
-          </span>
-          <Link
-            href={`/recipe/${recipe.id}`}
-            aria-label={`View ${recipe.title}`}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-linen text-ink transition hover:bg-oatmeal dark:border-white/15 dark:text-zinc-200 dark:hover:bg-white/5"
-          >
-            <ArrowRightIcon width={15} height={15} />
-          </Link>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-/* ================= Editor's Seasonal Edit ================= */
-export async function EditorsEdit() {
-  const picks = await getPicks();
-  const [feature, ...sides] = picks;
-
-  return (
-    <section className="container-app py-16 md:py-24">
-      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+    <section className="container-app py-14 md:py-20">
+      <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="micro-label flex items-center gap-2 text-clay-600 dark:text-clay-300">
-            <span aria-hidden>❋</span> Autumn Curations
-          </p>
-          <h2 className="font-display mt-3 text-3xl font-medium text-ink dark:text-zinc-50 md:text-5xl">
-            Editor's Seasonal Edit
-          </h2>
-          <p className="mt-4 max-w-xl text-sm leading-8 text-mineral dark:text-zinc-400">
-            Three slow gastronomic compositions capturing crisp orchard wind, forest floor forage,
-            and hearth smoke. Tested across six kitchen variants.
-          </p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-terracotta">Passport to Taste</p>
+          <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-espresso md:text-4xl dark:text-zinc-50">Browse by Cuisine</h2>
         </div>
-        <Link href="/search" className="micro-label group inline-flex items-center gap-1.5 transition hover:text-ink dark:hover:text-zinc-100">
-          View All 24 Edits
-          <ArrowUpRightIcon width={14} height={14} className="transition-transform group-hover:-translate-y-0.5" />
+        <p className="max-w-sm text-sm leading-7 text-espresso-700 dark:text-zinc-400">
+          From sun-drenched coastal olive groves to bustling night markets, sort your next meal by global heritage.
+        </p>
+      </div>
+      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        {CUISINES.map(({ name, count, Icon }) => (
+          <Link
+            key={name}
+            href={`/search?query=${encodeURIComponent(name)}`}
+            className="group flex flex-col items-center gap-3 rounded-3xl border border-ecru bg-porcelain px-4 py-6 text-center shadow-rest transition hover:-translate-y-1 hover:border-terracotta/40 hover:shadow-lift dark:border-white/10 dark:bg-white/5"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-canvas text-terracotta transition group-hover:bg-terracotta group-hover:text-white dark:bg-white/10">
+              <Icon width={22} height={22} />
+            </span>
+            <span className="text-sm font-bold text-espresso dark:text-zinc-100">{name}</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-mineral">{count} recipes</span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function TrendingCard({ r }: { r: RecipeSummary }) {
+  const diff = difficultyOf(r.readyInMinutes);
+  const rating = Math.round(((r.spoonacularScore ?? 0) / 100) * 5 * 10) / 10;
+  return (
+    <article className="group flex flex-col overflow-hidden rounded-3xl border border-ecru bg-porcelain shadow-rest transition hover:-translate-y-1 hover:shadow-lift dark:border-white/10 dark:bg-white/5">
+      <div className="relative aspect-[4/3] overflow-hidden bg-canvas dark:bg-white/5">
+        <Image
+          src={r.image || PLACEHOLDER_IMAGE}
+          alt={r.title}
+          fill
+          sizes="(max-width:640px) 100vw,(max-width:1024px) 50vw,25vw"
+          className="object-cover transition duration-500 group-hover:scale-105"
+        />
+        <Link href={`/recipe/${r.id}`} className="absolute inset-0 z-10" aria-label={`View ${r.title}`} />
+        <FavoriteButton
+          recipe={{ id: r.id, title: r.title, image: r.image }}
+          variant="floating"
+          size="sm"
+          className="absolute right-3 top-3 z-20"
+        />
+        <span className="absolute left-3 top-3 z-20 inline-flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-bold text-espresso backdrop-blur dark:bg-black/50 dark:text-zinc-100">
+          <ClockIcon width={12} height={12} />
+          {r.readyInMinutes ? `${r.readyInMinutes} mins` : "—"}
+        </span>
+        <span className={cn("absolute bottom-3 left-3 z-20 rounded-full px-2.5 py-1 text-[11px] font-bold", diff.tone)}>
+          {diff.label}
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col gap-2 p-5">
+        <p className="flex items-center gap-1 text-xs font-bold text-espresso dark:text-zinc-100">
+          <StarIcon width={13} height={13} className="text-apricot" fill="currentColor" />
+          {rating}
+          <span className="font-medium text-mineral">({(r.aggregateLikes ?? 0).toLocaleString("en-US")})</span>
+        </p>
+        <h3 className="font-display line-clamp-2 text-lg font-bold leading-6 text-espresso dark:text-zinc-50">
+          <Link href={`/recipe/${r.id}`} className="transition hover:text-terracotta">{r.title}</Link>
+        </h3>
+        <p className="line-clamp-2 text-sm leading-6 text-espresso-700 dark:text-zinc-400">
+          {truncate(r.summary, 110) || "A wholesome dish from our test kitchen."}
+        </p>
+        <div className="mt-auto flex items-center justify-between pt-3">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-mineral">
+            <UsersIcon width={14} height={14} />
+            {r.servings ? `${r.servings} Servings` : "—"}
+          </span>
+          <Link href={`/recipe/${r.id}`} className="inline-flex items-center gap-1 text-xs font-bold text-terracotta transition hover:gap-2">
+            Cook Dish <ArrowRightIcon width={14} height={14} />
+          </Link>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export async function TrendingSection() {
+  const recipes = await getTrending();
+  return (
+    <section className="container-app py-14 md:py-20">
+      <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-rosemary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-rosemary">
+            <FlameIcon width={12} height={12} />
+            Cooked by 12,000+ members
+          </span>
+          <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-espresso md:text-4xl dark:text-zinc-50">
+            Trending Recipes This Week
+          </h2>
+        </div>
+        <Link href="/search?sort=popularity" className="inline-flex items-center gap-1 text-sm font-bold text-terracotta transition hover:gap-2">
+          Explore all trending <ArrowRightIcon width={15} height={15} />
         </Link>
       </div>
-
-      {feature && (
-        <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <FeatureCard recipe={feature} />
-          <div className="flex flex-col gap-6">
-            {sides.map((r) => (
-              <SideCard key={r.id} recipe={r} />
-            ))}
-          </div>
+      {recipes.length > 0 ? (
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {recipes.map((r) => <TrendingCard key={r.id} r={r} />)}
         </div>
+      ) : (
+        <p className="mt-8 rounded-3xl border border-dashed border-ecru bg-canvas p-10 text-center text-sm text-mineral dark:border-white/10 dark:bg-white/5">
+          No trending recipes right now — check your API key or try again later.
+        </p>
       )}
     </section>
   );
 }
 
-/* ================= Taste atlas ================= */
-const TASTE_METRICS = [
-  { value: 78, label: "Acidity", sub: "Bright citrus & vinegars" },
-  { value: 92, label: "Umami", sub: "Fungi & aged cheese" },
-  { value: 85, label: "Crispness", sub: "Crust & hearth seed" },
-  { value: 64, label: "Earth", sub: "Roots & wild grains" },
-];
+const HARVEST_CHIPS = ["Roasted Pepitas", "Browned Sage Butter", "Aged Goat Cheese", "Cardamom Honey Drizzle"];
 
-function TasteRing({ value }: { value: number }) {
-  const r = 26;
-  const c = 2 * Math.PI * r;
+export function HarvestBanner() {
   return (
-    <div className="relative h-16 w-16">
-      <svg viewBox="0 0 64 64" className="h-16 w-16 -rotate-90">
-        <circle cx="32" cy="32" r={r} fill="none" strokeWidth="4" className="stroke-linen dark:stroke-white/10" />
-        <circle
-          cx="32" cy="32" r={r} fill="none" strokeWidth="4" strokeLinecap="round"
-          strokeDasharray={`${(c * value) / 100} ${c}`}
-          className="stroke-clay-500"
-        />
-      </svg>
-      <span className="font-display absolute inset-0 flex items-center justify-center text-sm font-semibold text-ink dark:text-zinc-100">
-        {value}%
-      </span>
-    </div>
-  );
-}
-
-export function TasteAtlas() {
-  return (
-    <section className="container-app pb-16 md:pb-24">
-      <div className="grid grid-cols-1 items-center gap-8 rounded-3xl border border-linen bg-oatmeal p-6 md:p-10 lg:grid-cols-[1fr_auto] dark:border-white/10 dark:bg-ink-900">
-        <div>
-          <p className="micro-label text-clay-600 dark:text-clay-300">Seasonal Taste Atlas</p>
-          <h2 className="font-display mt-3 text-2xl font-medium text-ink dark:text-zinc-50 md:text-4xl">
-            Harmonic Equilibrium Index
-          </h2>
-          <p className="mt-4 max-w-md text-sm leading-8 text-mineral dark:text-zinc-400">
-            Every published recipe is lab-evaluated across four sensory thresholds to ensure
-            repeatable gastronomic balance in home kitchens.
-          </p>
-        </div>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {TASTE_METRICS.map((m) => (
-            <div key={m.label} className="card flex flex-col items-center gap-3 p-4 text-center">
-              <TasteRing value={m.value} />
-              <p className="micro-label text-ink dark:text-zinc-100">{m.label}</p>
-              <p className="text-[10px] leading-4 text-mineral dark:text-zinc-400">{m.sub}</p>
+    <section className="container-app py-6 md:py-10">
+      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-terracotta via-terracotta-600 to-[#8B3A0E] p-7 text-white shadow-lift md:p-12">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
+          <div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wide backdrop-blur">
+              <ChefHatIcon width={13} height={13} />
+              Autumn Harvest Edition • Farm Fresh Picks
+            </span>
+            <h2 className="font-display mt-4 text-3xl font-extrabold leading-tight md:text-5xl">
+              Butternut Squash, Crisp Honeycrisp &amp; Wild Thyme
+            </h2>
+            <p className="mt-4 max-w-md text-sm leading-7 text-white/85">
+              Celebrate the sweetest produce of the season. Our culinary studio has curated 14 seasonal masterpieces highlighting caramel-roasted squashes, tart orchard apples, and warming kitchen spices.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {HARVEST_CHIPS.map((c) => (
+                <span key={c} className="rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur">• {c}</span>
+              ))}
             </div>
-          ))}
+            <Link href="/search?query=squash" className="mt-7 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-terracotta-700 transition hover:-translate-y-0.5 hover:shadow-lift">
+              Browse Autumn Collection <ArrowRightIcon width={16} height={16} />
+            </Link>
+            <p className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-white/70">
+              <ClockIcon width={12} height={12} /> Updated Weekly
+            </p>
+          </div>
+          <div className="relative">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-white/20 shadow-sheet">
+              <Image
+                src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=1200&q=80"
+                alt="Roasted butternut squash"
+                fill
+                sizes="(max-width:1024px) 100vw,50vw"
+                className="object-cover"
+              />
+              <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-terracotta-700">
+                <ChefHatIcon width={12} height={12} /> Chef’s Crown Pick
+              </span>
+              <div className="absolute inset-x-3 bottom-3 rounded-2xl bg-white/90 p-3 backdrop-blur dark:bg-black/60">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-mineral">45 min prep</p>
+                <p className="font-display truncate text-sm font-bold text-espresso dark:text-zinc-50">Stuffed Harvest Squash with Wild Pecan Rice</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-/* ================= Manifesto ================= */
-const STATS = [
-  { value: "840+", label: "Triple-Tested Formulations", accent: false },
-  { value: "100%", label: "Ad-Free Journalistic Rigor", accent: true },
-  { value: "14", label: "Regional Guild Chapters", accent: false },
+const STEPS = [
+  { n: "01", Icon: BasketIcon, title: "Enter Ingredients", desc: "Type whatever you have on hand: two eggs, wilted spinach, half an onion, or a can of chickpeas. No missing-item stress.", chip: "Zero Food Waste", Chip: LeafIcon },
+  { n: "02", Icon: SparklesIcon, title: "Get Tailored Dishes", desc: "Our culinary matching engine filters thousands of vetted chef recipes, sorting instantly by cook time and skill level.", chip: "Custom Portion Scales", Chip: SlidersIcon },
+  { n: "03", Icon: UtensilsIcon, title: "Cook & Savor", desc: "Follow interactive step checklists, built-in cook timers, and wine or herb pairings crafted to heighten every bite.", chip: "Built-in Kitchen Timers", Chip: ClockIcon },
 ];
 
-const GUILD = [
-  {
-    name: "Dr. Mei Lin",
-    role: "Botanical Fermentation",
-    desc: "Specialist in wild koji strains and heirloom koji fermentation techniques.",
-  },
-  {
-    name: "Matteo Rossi",
-    role: "Ancient Grain Ecology",
-    desc: "Advocate for Mediterranean heritage pulses, stone-milled semolina, and low-water agriculture.",
-  },
-];
-
-export function Manifesto() {
+export function HowItWorks() {
   return (
-    <section className="container-app grid grid-cols-1 gap-12 pb-20 md:pb-28 lg:grid-cols-2 lg:gap-16">
-      <div>
-        <p className="micro-label flex items-center gap-2">
-          <BookOpenIcon width={14} height={14} className="text-sage-600" /> Our Culinary Manifesto
+    <section className="container-app py-14 md:py-20">
+      <div className="text-center">
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-terracotta">Effortless Kitchen Magic</p>
+        <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-espresso md:text-4xl dark:text-zinc-50">How Recipe Finder Works</h2>
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-espresso-700 dark:text-zinc-400">
+          Turn whatever is hiding in your fridge into an extraordinary home-cooked dining experience in three swift steps.
         </p>
-        <h2 className="font-display mt-4 text-3xl font-medium leading-[1.35] text-ink dark:text-zinc-50 md:text-5xl md:leading-[1.3]">
-          We treat the recipe as literature, not mere code.
-        </h2>
-        <p className="mt-6 text-sm leading-8 text-mineral dark:text-zinc-400">
-          In an era of hyper-accelerated culinary trends, SAVOR preserves deliberate kitchen slowness.
-          Each formula is built around seasonal bioavailability, regional preservation techniques,
-          and minimum ingredient interference.
-        </p>
-        <p className="mt-4 text-sm leading-8 text-mineral dark:text-zinc-400">
-          We believe deliciousness is an inevitable byproduct of deep ingredient respect, proper heat
-          transfer, and time allowed to do its quiet work.
-        </p>
-
-        <div className="mt-10 grid grid-cols-3 gap-6 border-t border-linen pt-8 dark:border-white/10">
-          {STATS.map((s) => (
-            <div key={s.label}>
-              <p className={cn("font-display text-3xl font-medium md:text-4xl", s.accent ? "text-clay-600 dark:text-clay-300" : "text-ink dark:text-zinc-50")}>
-                {s.value}
-              </p>
-              <p className="micro-label mt-2">{s.label}</p>
-            </div>
-          ))}
-        </div>
       </div>
+      <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+        {STEPS.map(({ n, Icon, title, desc, chip, Chip }) => (
+          <div key={n} className="relative flex flex-col rounded-3xl border border-ecru bg-porcelain p-7 shadow-rest dark:border-white/10 dark:bg-white/5">
+            <span className="font-display absolute right-6 top-5 text-4xl font-extrabold text-ecru dark:text-white/10">{n}</span>
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-terracotta/10 text-terracotta dark:bg-terracotta/20">
+              <Icon width={26} height={26} />
+            </span>
+            <h3 className="font-display mt-5 text-xl font-bold text-espresso dark:text-zinc-50">{title}</h3>
+            <p className="mt-2 flex-1 text-sm leading-7 text-espresso-700 dark:text-zinc-400">{desc}</p>
+            <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-rosemary dark:text-rosemary-200">
+              <Chip width={14} height={14} /> {chip}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
-      <div className="flex flex-col gap-4">
-        <blockquote className="card p-6">
-          <span className="pill bg-sage-500/10 text-sage-700 dark:text-sage-300">Master of Breadcraft</span>
-          <p className="font-display mt-4 text-xl font-medium text-ink dark:text-zinc-50">
-            Julian Moreau • Copenhagen Guild
-          </p>
-          <p className="mt-3 text-sm leading-8 text-mineral dark:text-zinc-400">
-            "When flour meets ancient water and wild yeasts, chemistry becomes memory.
-            We do not rush the fermentation; we attend to it."
-          </p>
-          <p className="micro-label mt-4">Author of 'The Hearth Vow' • 48 Formulations</p>
-        </blockquote>
+const AVATARS = [
+  { i: "ML", c: "bg-terracotta" },
+  { i: "AK", c: "bg-rosemary" },
+  { i: "SJ", c: "bg-apricot text-espresso" },
+];
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {GUILD.map((g) => (
-            <div key={g.name} className="card flex items-start gap-3 p-5">
-              <span className="font-display flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-linen bg-oatmeal text-lg dark:border-white/10 dark:bg-ink-800">
-                {g.name.charAt(0)}
+export function TestimonialSection() {
+  return (
+    <section className="container-app pb-16 md:pb-24">
+      <div className="flex flex-col items-center justify-between gap-6 rounded-3xl border border-ecru bg-canvas px-7 py-8 md:flex-row dark:border-white/10 dark:bg-white/5">
+        <div className="flex items-center gap-4">
+          <div className="flex -space-x-3">
+            {AVATARS.map((a) => (
+              <span key={a.i} className={cn("flex h-11 w-11 items-center justify-center rounded-full border-2 border-canvas text-xs font-extrabold text-white dark:border-ink-900", a.c)}>
+                {a.i}
               </span>
-              <div>
-                <p className="text-sm font-bold text-ink dark:text-zinc-100">{g.name}</p>
-                <p className="micro-label mt-1 text-clay-600 dark:text-clay-300">{g.role}</p>
-                <p className="mt-2 text-xs leading-6 text-mineral dark:text-zinc-400">{g.desc}</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div>
+            <p className="flex text-apricot">
+              {Array.from({ length: 5 }).map((_, k) => (
+                <StarIcon key={k} width={15} height={15} fill="currentColor" />
+              ))}
+            </p>
+            <p className="mt-1 text-sm font-semibold text-espresso dark:text-zinc-100">“Saved me from ordering takeout four nights in a row!”</p>
+          </div>
         </div>
-
-        <div className="card flex flex-col items-start justify-between gap-4 p-5 sm:flex-row sm:items-center">
-          <p className="flex items-center gap-3 text-sm leading-7 text-mineral dark:text-zinc-400">
-            <BookOpenIcon width={18} height={18} className="shrink-0 text-sage-600" />
-            Read our peer-reviewed recipe standards and culinary ethics charter.
-          </p>
-          <Link href="/about" className="btn-secondary shrink-0 rounded-full px-5 py-2.5 text-xs">
-            Read Charter
-            <ArrowRightIcon width={14} height={14} />
-          </Link>
-        </div>
+        <Link href="/search" className="shrink-0 rounded-full bg-terracotta px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-terracotta-600 hover:shadow-lift">
+          Join the Cook Club
+        </Link>
       </div>
     </section>
   );

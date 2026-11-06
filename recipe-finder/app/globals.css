@@ -3,59 +3,101 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
+
   html {
     scroll-behavior: smooth;
   }
+
   body {
-    @apply bg-alabaster font-sans text-ink antialiased dark:bg-ink-950 dark:text-zinc-100;
+    @apply font-sans text-ink antialiased;
+    background-color: #faf6f0;
+    background-image:
+      radial-gradient(circle at 10% 10%, rgba(224, 90, 27, 0.10), transparent 28%),
+      radial-gradient(circle at 90% 0%, rgba(244, 162, 97, 0.12), transparent 30%),
+      radial-gradient(circle at 50% 100%, rgba(45, 90, 63, 0.08), transparent 35%);
+    background-attachment: fixed;
   }
+
+  .dark body {
+    background-color: #100e0c;
+    background-image:
+      radial-gradient(circle at 10% 10%, rgba(224, 90, 27, 0.18), transparent 28%),
+      radial-gradient(circle at 90% 0%, rgba(244, 162, 97, 0.12), transparent 30%),
+      radial-gradient(circle at 50% 100%, rgba(45, 90, 63, 0.16), transparent 35%);
+    @apply text-zinc-100;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-tight;
+  }
+
   ::selection {
-    @apply bg-clay-500/25;
+    background: rgba(224, 90, 27, 0.2);
+    color: #9a3a0e;
+  }
+
+  .dark ::selection {
+    background: rgba(224, 90, 27, 0.35);
+    color: #ffc7a8;
+  }
+
+  :focus-visible {
+    outline: 2px solid #e05a1b;
+    outline-offset: 2px;
   }
 }
 
 @layer components {
-  /* حاشیه‌های ادیتوریال: موبایل 1.25rem — دسکتاپ 3.5rem */
   .container-app {
-    @apply mx-auto w-full max-w-[1240px] px-5 md:px-8 lg:px-14;
+    @apply mx-auto w-full max-w-[1280px] px-5 md:px-8 lg:px-12;
   }
 
-  /* کارت ادیتوریال: گوشه 24px + مرز مویی کتان + سایه محیطی گرم */
   .card {
-    @apply rounded-3xl border border-linen bg-white shadow-rest dark:border-white/10 dark:bg-ink-900;
+    @apply rounded-[2rem] border border-linen bg-porcelain shadow-rest dark:border-white/10 dark:bg-ink-900;
   }
+
   .card-hover {
-    @apply transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift;
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lift;
   }
 
-  /* ورودی 52px با گوشه 16px و حلقه فوکوس مریم‌گلی */
   .input {
-    @apply h-[52px] w-full rounded-2xl border border-linen bg-oatmeal px-4 text-sm text-ink outline-none transition placeholder:text-mineral/70 focus:border-sage-600 focus:ring-[3px] focus:ring-sage-600/10 dark:border-white/10 dark:bg-ink-900 dark:text-zinc-100;
+    @apply h-12 w-full rounded-full border border-linen bg-porcelain px-5 text-sm text-ink outline-none transition placeholder:text-mineral/70 focus:border-terracotta focus:ring-4 focus:ring-terracotta/15 dark:border-white/10 dark:bg-white/5 dark:text-zinc-100;
   }
 
-  /* شیشه مات (Frosted Vellum) */
   .frost {
-    @apply border border-white/60 bg-[rgba(251,251,250,0.78)] backdrop-blur-[16px] dark:border-white/10 dark:bg-[rgba(16,19,17,0.72)];
+    @apply border border-white/60 bg-[rgba(255,251,248,0.78)] backdrop-blur-xl dark:border-white/10 dark:bg-[rgba(16,14,12,0.72)];
   }
 
-  /* میکرو‌لیبل‌های شاخص‌مانند (Book-spine indexing) */
   .micro-label {
-    @apply text-[11px] font-semibold tracking-[0.14em] text-mineral dark:text-zinc-400;
+    @apply text-[11px] font-bold uppercase tracking-[0.14em] text-mineral dark:text-zinc-400;
   }
 
   .pill {
-    @apply inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold;
+    @apply inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-bold;
   }
 
-  /* دکمه‌ها طبق DESIGN.md */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-sage-700 px-6 py-3 text-sm font-semibold text-alabaster shadow-rest transition hover:-translate-y-px hover:bg-sage-800 hover:shadow-lift;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-terracotta px-6 py-3 text-sm font-bold text-white shadow-rest transition hover:-translate-y-0.5 hover:bg-terracotta-600 hover:shadow-lift active:translate-y-0.5;
   }
+
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-linen bg-transparent px-6 py-3 text-sm font-semibold text-ink transition hover:bg-oatmeal dark:border-white/15 dark:text-zinc-100 dark:hover:bg-white/5;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-rosemary bg-porcelain px-6 py-3 text-sm font-bold text-rosemary transition hover:bg-rosemary hover:text-white active:translate-y-0.5 dark:border-rosemary-400 dark:bg-white/5 dark:text-rosemary-200 dark:hover:bg-rosemary dark:hover:text-white;
   }
+
   .btn-accent {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-clay-500/10 px-5 py-2.5 text-xs font-bold text-clay-600 transition hover:bg-clay-500/20 dark:text-clay-300;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-apricot/20 px-5 py-2.5 text-xs font-bold text-terracotta-700 transition hover:bg-apricot/30 dark:text-apricot-200;
   }
 }
 
@@ -63,16 +105,28 @@
   .skeleton {
     @apply relative overflow-hidden rounded-xl bg-linen/80 dark:bg-ink-800;
   }
+
   .skeleton::after {
     content: "";
     position: absolute;
     inset: 0;
     transform: translateX(100%);
-    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.5), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.55),
+      transparent
+    );
     animation: shimmer 1.6s infinite;
   }
+
   .dark .skeleton::after {
-    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.06), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.08),
+      transparent
+    );
   }
 }
 
