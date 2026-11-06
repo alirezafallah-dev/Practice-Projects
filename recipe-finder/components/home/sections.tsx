@@ -9,20 +9,17 @@ import {
   UsersIcon,
 } from "@/components/ui/icons";
 import { PLACEHOLDER_IMAGE } from "@/lib/constants";
-import { mockSearch } from "@/lib/mock";
 import { searchRecipes } from "@/lib/spoonacular";
 import { cn, formatMinutes, translateDishType, truncate } from "@/lib/utils";
 import type { RecipeSummary } from "@/types";
 
-/* ---------- "Editor's Seasonal Edit" data: top three recipes ---------- */
-async function getPicks(): Promise<RecipeSummary[]> {
-  try {
-    const res = await searchRecipes({ sort: "popularity", pageSize: 3 });
-    if (res.results.length >= 3) return res.results.slice(0, 3);
-  } catch {
-    // quota exhausted or network error → fall back to sample data
-  }
-  return mockSearch({ sort: "popularity", pageSize: 3 }).results.slice(0, 3);
+export async function getPicks(): Promise<RecipeSummary[]> {
+    try {
+        const res = await searchRecipes({ sort: "popularity", pageSize: 3 });
+        return res.results.slice(0, 3);
+    } catch {
+        return [];
+    }
 }
 
 /* ================= Seasonal index band ================= */
