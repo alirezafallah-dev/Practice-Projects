@@ -4,6 +4,4 @@ out
 .env*.local
 *.tsbuildinfo
 next-env.d.ts
-.DS_Storenode_modules
-.next
-.env
+.DS_Store

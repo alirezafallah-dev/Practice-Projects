@@ -104,3 +104,17 @@ export function ErrorState({
     </div>
   );
 }
+
+/** Shown when no API key is configured */
+export function MockBanner() {
+  return (
+    <div className="flex items-center gap-2 rounded-2xl border border-clay-200 bg-clay-50 px-4 py-3 text-sm text-clay-700 dark:border-clay-500/30 dark:bg-clay-500/10 dark:text-clay-300">
+      <span aria-hidden>🧪</span>
+      <span>
+        <strong>Demo mode:</strong> <code className="font-latin rounded bg-white/70 px-1 dark:bg-ink-950/60">SPOONACULAR_API_KEY</code> is not
+        set in <code className="font-latin rounded bg-white/70 px-1 dark:bg-ink-950/60">.env.local</code>, so sample data is shown. Add a free key
+        from spoonacular.com for live recipes.
+      </span>
+    </div>
+  );
+}

@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import DetailActions from "@/components/recipe/detail-actions";
 import PantryChecklist from "@/components/recipe/pantry-checklist";
 import Preparation from "@/components/recipes/pagination";
-import { ErrorState } from "@/components/ui/states";
+import { MockBanner, ErrorState } from "@/components/ui/states";
 import {
   CameraIcon,
   FlameIcon,
@@ -40,6 +40,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Recipe Details" };
   }
 }
+
+/* ---------- Editorial helpers ---------- */
 
 function ratingOf(recipe: RecipeDetail): number {
   return Math.round(((recipe.spoonacularScore ?? 70) / 100) * 5 * 10) / 10;
@@ -112,6 +114,7 @@ export default async function RecipeDetailPage({ params }: Props) {
 
   return (
     <article>
+      {/* ---------- Masthead band ---------- */}
       <div className="border-b border-linen dark:border-white/10">
         <div className="container-app flex flex-wrap items-center justify-between gap-2 py-3">
           <p className="micro-label flex flex-wrap items-center gap-2">
@@ -131,8 +134,16 @@ export default async function RecipeDetailPage({ params }: Props) {
         </div>
       </div>
 
+      {!hasApiKey() && (
+        <div className="container-app pt-6">
+          <MockBanner />
+        </div>
+      )}
+
       <div className="container-app grid grid-cols-1 gap-10 py-8 md:py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
+        {/* ================= LEFT: media rail ================= */}
         <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+          {/* Portrait hero frame */}
           <div className="relative overflow-hidden rounded-3xl border border-linen bg-oatmeal shadow-rest dark:border-white/10 dark:bg-ink-800">
             <div className="relative aspect-[4/5]">
               <Image
@@ -158,6 +169,7 @@ export default async function RecipeDetailPage({ params }: Props) {
             </div>
           </div>
 
+          {/* Step / pantry photography */}
           {thumbs.length > 0 && (
             <div>
               <div className="flex items-center justify-between">
@@ -181,6 +193,7 @@ export default async function RecipeDetailPage({ params }: Props) {
             </div>
           )}
 
+          {/* Taste profile index */}
           <div className="card p-5">
             <div className="flex items-center justify-between">
               <p className="micro-label flex items-center gap-1.5 text-ink dark:text-zinc-100">
@@ -197,7 +210,9 @@ export default async function RecipeDetailPage({ params }: Props) {
           </div>
         </aside>
 
+        {/* ================= RIGHT: narrative ================= */}
         <div className="space-y-8">
+          {/* Folio + rating */}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span className="pill bg-oatmeal text-ink dark:bg-white/5 dark:text-zinc-200">
               {cuisine} Folio • Issue No. {(recipe.id % 12) + 1}
@@ -213,6 +228,7 @@ export default async function RecipeDetailPage({ params }: Props) {
             </p>
           </div>
 
+          {/* Title + description */}
           <header>
             <h1 className="font-display text-4xl font-medium leading-[1.15] text-ink md:text-5xl dark:text-zinc-50">
               {recipe.title}
@@ -222,6 +238,7 @@ export default async function RecipeDetailPage({ params }: Props) {
             </p>
           </header>
 
+          {/* Author */}
           <div className="flex items-center gap-3">
             <span className="font-display flex h-11 w-11 items-center justify-center rounded-full border border-linen bg-oatmeal text-lg dark:border-white/10 dark:bg-ink-800">
               {(recipe.sourceName ?? "S").charAt(0)}
@@ -235,6 +252,7 @@ export default async function RecipeDetailPage({ params }: Props) {
             </div>
           </div>
 
+          {/* Meta tiles */}
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             <MetaTile icon={<ClockIcon width={16} height={16} />} label="Prep Time" value={formatMinutes(recipe.readyInMinutes)} />
             <MetaTile icon={<FlameIcon width={16} height={16} />} label="Calories" value={recipe.calories !== null ? `${recipe.calories} kcal` : "—"} />
@@ -242,8 +260,10 @@ export default async function RecipeDetailPage({ params }: Props) {
             <MetaTile icon={<LeafIcon width={16} height={16} />} label="Health Score" value={recipe.healthScore !== null ? `${recipe.healthScore}/100` : "—"} />
           </div>
 
+          {/* Actions */}
           <DetailActions id={recipe.id} title={recipe.title} image={recipe.image} flags={flags} />
 
+          {/* Pantry provisions */}
           {recipe.ingredients.length > 0 ? (
             <PantryChecklist ingredients={recipe.ingredients} />
           ) : (
@@ -252,6 +272,7 @@ export default async function RecipeDetailPage({ params }: Props) {
             </p>
           )}
 
+          {/* Preparation routine */}
           {recipe.instructions.length > 0 ? (
             <Preparation steps={recipe.instructions} />
           ) : (
@@ -260,6 +281,7 @@ export default async function RecipeDetailPage({ params }: Props) {
             </p>
           )}
 
+          {/* Sommelier pairing */}
           <section className="rounded-3xl border border-linen bg-oatmeal p-6 dark:border-white/10 dark:bg-ink-900">
             <div className="flex gap-4">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sage-700 text-alabaster">
@@ -272,7 +294,7 @@ export default async function RecipeDetailPage({ params }: Props) {
                 </div>
                 <p className="mt-3 text-sm leading-7 text-mineral dark:text-zinc-400">{pairing.note}</p>
                 <p className="micro-label mt-4">
-                  Serving Temp: {pairing.temp}<span className="mx-2 text-linen dark:text-white/20">•</span> Stemware: {pairing.glass}
+                  Serving Temp: {pairing.temp} <span className="mx-2 text-linen dark:text-white/20">•</span> Stemware: {pairing.glass}
                 </p>
               </div>
             </div>
