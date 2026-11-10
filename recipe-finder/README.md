@@ -10,7 +10,7 @@
 
 **A modern recipe discovery platform with a warm, editorial kitchen aesthetic — built with Next.js 16 App Router, TypeScript, and a fully custom Neo-Culinary design system.**
 
-🔗 **[Live Demo](https://practice-projects-recipe-finder.vercel.app/)** • 📂 **[Source Code](https://github.com/alirezafallah-dev/Practice-Projects/tree/main/recipe-finder)**
+🔗 **[Live Demo](https://recipe-finder-im036ecu4-arf16.vercel.app/)** • 📂 **[Source Code](https://github.com/alirezafallah-dev/Practice-Projects/tree/main/recipe-finder)**
 
 </div>
 
