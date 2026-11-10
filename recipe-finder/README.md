@@ -1,16 +1,39 @@
-# 🍽️ Recipe Finder — Neo-Culinary Hearth
-
 <div align="center">
 
-![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=next.js&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+# 🍳 RecipeFinder
 
-**A modern recipe discovery platform with a warm, editorial kitchen aesthetic — built with Next.js 16 App Router, TypeScript, and a fully custom Neo-Culinary design system.**
+### **Modern Recipe Discovery App**
 
-🔗 **[Live Demo](https://recipe-finder-im036ecu4-arf16.vercel.app/)** • 📂 **[Source Code](https://github.com/alirezafallah-dev/Practice-Projects/tree/main/recipe-finder)**
+Search, explore, and save delicious recipes with a clean, fast, and responsive experience.
+
+<br />
+
+<p align="center">
+  <!-- Replace the live demo URL below with your real deployed link -->
+  <a href="https://YOUR-RECIPE-FINDER-DEMO-URL.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Open%20RecipeFinder-6366F1?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/alirezafallah-dev/Practice-Projects/tree/main/recipe-finder" target="_blank">
+    <img src="https://img.shields.io/badge/📂%20GitHub-View%20Project-111827?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repository" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/alirezafallah-dev/Practice-Projects/issues/new?labels=bug&title=%5BBug%5D%3A%20RecipeFinder%3A%20" target="_blank">
+    <img src="https://img.shields.io/badge/🐞%20Report%20Bug-Create%20Issue-EF4444?style=for-the-badge&logo=github&logoColor=white" alt="Report Bug" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/alirezafallah-dev/Practice-Projects/issues/new?labels=enhancement&title=%5BFeature%5D%3A%20RecipeFinder%3A%20" target="_blank">
+    <img src="https://img.shields.io/badge/💡%20Request%20Feature-Suggest%20Idea-10B981?style=for-the-badge&logo=github&logoColor=white" alt="Request Feature" />
+  </a>
+</p>
+
+<br />
+
+![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react&logoColor=20232A)
+![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat-square&logo=tailwindcss&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![License](https://img.shields.io/badge/License-MIT-16A34A?style=flat-square)
 
 </div>
 
@@ -18,202 +41,266 @@
 
 ## ✨ Overview
 
-Recipe Finder is a full-stack web application that helps home cooks discover new meals based on the ingredients they already have. Built as a practice project to explore modern React patterns, it features **Server Components for API security**, a **centralized Favorites system**, and a **custom design system** inspired by warm kitchen aesthetics.
+RecipeFinder is a responsive recipe discovery application built to help users search for recipes, explore dishes by category, view detailed cooking instructions, and save their favorite meals in one place.
 
-The application integrates with the **Spoonacular API** to provide real-time recipe data, featuring a polished editorial UI with Bricolage Grotesque typography, terracotta/rosemary color palette, and tactile pill-shaped interactions.
+It combines a modern UI, smooth interactions, recipe filtering, detailed recipe pages, and a delightful browsing experience for food lovers and home cooks.
 
----
-
-## 🚀 Key Features
-
-### 🔍 Discovery & Search
-- **Smart Ingredient Search** — Find recipes based on what's in your pantry
-- **Multi-filter Querying** — Filter by diet (vegetarian, vegan, gluten-free), meal type, and sort order
-- **URL-Driven State** — Shareable search URLs with encoded filters
-- **Popular & Trending** — Curated quick searches and weekly trending recipes
-
-### ❤️ Personalization
-- **Favorites System** — Save recipes to LocalStorage with cross-tab sync via `storage` events
-- **Centralized `FavoriteButton`** — One polymorphic component (`icon` / `floating` / `labeled`) used across 4 views
-- **Dark Mode** — System-aware theme toggle via `next-themes`
-
-### 📖 Recipe Details
-- **Rich Metadata** — Cook time, servings, health score, spoonacular score, calories
-- **Interactive Step Timeline** — Numbered preparation steps with optional per-step **countdown timers**
-- **Pantry Checklist** — Ingredient list with metric/US unit toggling
-- **Sommelier Pairings** — Smart wine pairing suggestions based on recipe keywords
-- **Dietary Badges** — Vegetarian, vegan, gluten-free, dairy-free tags
-
-### 🎨 Design System — Neo-Culinary Hearth
-- **Warm Palette**: Terracotta (`#E05A1B`), Rosemary (`#2D5A3F`), Apricot (`#F4A261`), Espresso (`#2B2623`)
-- **Typography**: Bricolage Grotesque (display) + DM Sans (body) — locally hosted for build reliability
-- **Tactile Shapes**: Pill buttons, 2rem rounded cards, warm glow shadows (`rgba(224, 90, 27, 0.12)`)
-- **Unified Iconography**: All 40+ icons sourced from **Lucide React** for visual consistency
+> [!TIP]
+> Explore the live demo to see RecipeFinder in action before cloning the repository.
 
 ---
 
-## 🛠️ Tech Stack
+## 🎬 Live Demo
 
-| Layer | Technology |
-|-------|-----------|
-| **Framework** | Next.js 16 (App Router, Turbopack) |
-| **Language** | TypeScript 5 |
-| **UI Library** | React 19 |
-| **Styling** | Tailwind CSS 3 |
-| **Icons** | Lucide React |
-| **Theme** | next-themes |
-| **API** | Spoonacular (server-only, no client exposure) |
-| **Fonts** | Local woff2 (Bricolage Grotesque, DM Sans) |
-| **Deployment** | Vercel |
+<p align="center">
+  <!-- Replace the live demo URL below with your real deployed link -->
+  <a href="https://YOUR-RECIPE-FINDER-DEMO-URL.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/EXPLORE%20RECIPEFINDER-Launch%20Live%20Demo-6366F1?style=for-the-badge&logo=vercel&logoColor=white" alt="Launch RecipeFinder live demo" />
+  </a>
+</p>
+
+> [!NOTE]
+> This application is designed for easy exploration and does not require authentication by default.
 
 ---
 
-## 🏗️ Architecture Highlights
+## 🚀 Features
 
-```
-recipe-finder/
-├── app/                    # App Router pages (Server Components)
-│   ├── layout.tsx         # Root layout + Providers
-│   ├── page.tsx           # Home (Hero + 5 sections)
-│   ├── search/page.tsx    # Async search with URL params
-│   ├── favorites/page.tsx # Client-only favorites
-│   └── recipe/[id]/       # Dynamic detail page + SEO
-├── components/
-│   ├── home/              # Hero + sections
-│   ├── recipes/           # Cards, grid, pagination, FavoriteButton
-│   ├── recipe/            # Detail actions, pantry checklist
-│   └── ui/                # Icons, states (EmptyState, ErrorState)
-├── context/
-│   └── favorites-context.tsx   # Global favorites state + LocalStorage
-├── lib/
-│   ├── spoonacular.ts     # Server-only API layer (ISR cached)
-│   ├── search-utils.ts    # Query normalization
-│   └── utils.ts           # cn(), truncate(), formatMinutes()
-└── types/index.ts         # Shared TypeScript contracts
-```
-
-### 🔐 Security Pattern
-The Spoonacular API key lives **only on the server**. `lib/spoonacular.ts` is never imported by client components, ensuring the key is never exposed in the browser bundle.
-
-### 🧩 Centralized Favorite Button
-A single `FavoriteButton` component with three variants (`icon`, `floating`, `labeled`) is consumed across Trending cards, Recipe cards, Detail page, and Favorites list — making future changes a single-file edit.
+| Area              | Highlights                                                                 |
+| ----------------- | -------------------------------------------------------------------------- |
+| Recipe Search     | Search recipes by name, ingredient, or keyword                             |
+| Smart Filters     | Filter recipes by category, cuisine, difficulty, or cooking time           |
+| Recipe Cards      | Beautiful cards with images, summaries, ratings, and quick actions         |
+| Recipe Details    | View full ingredients, step-by-step instructions, and metadata             |
+| Favorites         | Save and access your favorite recipes locally                              |
+| User Experience   | Responsive layout, modern UI, smooth transitions, and intuitive navigation |
+| Performance       | Fast client-side rendering and optimized asset loading                     |
+| Scalable Structure| Clean folder architecture for easy maintenance and future expansion        |
 
 ---
 
-## 📸 Screenshots
+## 🧰 Tech Stack
 
-| Homepage | Search Results | Recipe Detail |
-|----------|----------------|---------------|
-| ![Home](./screenshots/home.png) | ![Search](./screenshots/search.png) | ![Detail](./screenshots/detail.png) |
-
-| Favorites | Dark Mode | Mobile |
-|-----------|-----------|--------|
-| ![Favorites](./screenshots/favorites.png) | ![Dark](./screenshots/dark.png) | ![Mobile](./screenshots/mobile.png) |
-
-> 💡 *Screenshots coming soon — visit the [Live Demo](https://practice-projects-recipe-finder.vercel.app/) for the full experience.*
+| Category         | Technologies                                      |
+| ---------------- | ------------------------------------------------- |
+| Core             | React 19.2, Vite 8.3                              |
+| Routing & State  | React Router DOM 7, React Context API, localStorage |
+| Styling & Motion | Tailwind CSS 3.4, PostCSS, Autoprefixer, Framer Motion 11 |
+| UI & Data        | Lucide React, REST API integration                |
+| Code Quality     | ESLint                                            |
 
 ---
 
 ## ⚙️ Getting Started
 
 ### Prerequisites
-- **Node.js** 18+ (recommended: 20+)
-- **npm** or **yarn**
-- **Git**
-- **Spoonacular API Key** — [Get one free](https://spoonacular.com/food-api) (150 requests/day)
+
+Make sure you have the following installed on your machine:
+
+- Node.js `18+`
+- npm `9+`
+- Git
+
+Check your installed versions:
+
+```bash
+node --version
+npm --version
+git --version
+```
 
 ### Installation
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/alirezafallah-dev/Practice-Projects.git
+# Clone the repository
+git clone https://github.com/alirezafallah-dev/practice-projects.git
 
-# 2. Navigate to the project
-cd Practice-Projects/recipe-finder
+# Move into the project directory
+cd practice-projects/recipe-finder
 
-# 3. Install dependencies
+# Install dependencies
 npm install
 
-# 4. Set up environment variables
-cp .env.local.example .env.local
-```
-
-Open `.env.local` and add your Spoonacular API key:
-
-```env
-SPOONACULAR_API_KEY=your_api_key_here
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-```
-
-```bash
-# 5. Start the development server
+# Start the development server
 npm run dev
 ```
 
-Visit **http://localhost:3000** 🎉
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Environment Variables (Optional)
+
+If your project uses a recipe API that requires a key, create a `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+Then add your API key:
+
+```env
+VITE_RECIPE_API_KEY=your_api_key_here
+```
+
+> [!IMPORTANT]
+> Never commit real API keys or secrets directly into the repository.
 
 ---
 
-## 🌐 Deployment
+## 📜 Available Scripts
 
-Deployed on **Vercel** with automatic GitHub integration.
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Start the development server         |
+| `npm run build`   | Create a production build            |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint`    | Run ESLint                           |
 
-### Environment Variables on Vercel
-1. Go to **Project Settings → Environment Variables**
-2. Add `SPOONACULAR_API_KEY` with your key
-3. Set **Root Directory** to `recipe-finder`
-4. Deploy
+---
 
-### Local Production Build
+## 🖼️ Screenshots
 
-```bash
-npm run build
-npm start
+Add application screenshots to a `screenshots/` directory and update the image paths below when they are available.
+
+| Screen           | Image                            |
+| ---------------- | -------------------------------- |
+| Home Page        | `screenshots/home.png`           |
+| Recipe Search    | `screenshots/search.png`         |
+| Recipe Details   | `screenshots/recipe-details.png` |
+| Favorites        | `screenshots/favorites.png`      |
+| Mobile View      | `screenshots/mobile.png`         |
+
+<!--
+When screenshots are added, replace the table above with:
+
+![Home Page](screenshots/home.png)
+-->
+
+---
+
+## 📁 Project Structure
+
+```text
+recipe-finder/
+ ├── public/                     # Static assets
+ ├── src/
+ │   ├── assets/                 # Images, icons, and local media
+ │   ├── components/
+ │   │   ├── Navbar.jsx          # Top navigation bar
+ │   │   ├── RecipeCard.jsx      # Recipe card component
+ │   │   ├── SearchBar.jsx       # Search input component
+ │   │   ├── FilterPanel.jsx     # Recipe filters component
+ │   │   └── EmptyState.jsx      # Empty results state
+ │   ├── context/
+ │   │   └── RecipeContext.jsx   # Global recipe state
+ │   ├── hooks/
+ │   │   ├── useRecipes.js       # Recipe fetching logic
+ │   │   └── useFavorites.js     # Favorites management logic
+ │   ├── pages/
+ │   │   ├── HomePage.jsx        # Main recipe browsing page
+ │   │   ├── RecipeDetailPage.jsx# Single recipe detail view
+ │   │   └── FavoritesPage.jsx   # Saved recipes page
+ │   ├── services/
+ │   │   └── recipeApi.js        # API integration layer
+ │   ├── utils/
+ │   │   └── helpers.js          # Utility functions
+ │   ├── App.jsx                 # Root application component
+ │   ├── main.jsx                # Application entry point
+ │   └── index.css               # Global styles
+ ├── .env.example                # Example environment variables
+ ├── .gitignore
+ ├── index.html
+ ├── package.json
+ ├── postcss.config.js
+ ├── tailwind.config.js
+ ├── vite.config.js
+ └── README.md
 ```
 
 ---
 
-## 🎯 Project Goals
+## 🔐 Security
 
-This project was built as a frontend practice exercise to master:
+RecipeFinder is primarily a frontend application. If it integrates with third-party recipe APIs, sensitive keys should never be exposed in client-side production code.
 
-- ✅ **Next.js App Router** — Server vs Client components, `generateMetadata`, dynamic routes
-- ✅ **TypeScript contracts** — Shared types, defensive API mapping
-- ✅ **Modern CSS** — Tailwind design tokens, custom color palettes, warm shadows
-- ✅ **State management** — Context API + LocalStorage + cross-tab sync
-- ✅ **SEO** — Dynamic metadata, OpenGraph, semantic HTML
-- ✅ **API integration** — Server-only fetch, ISR caching, graceful error handling
-- ✅ **UX patterns** — Skeleton loaders, empty states, error boundaries, hydration-safe theming
+For a more production-ready setup, consider:
 
----
+- Using environment variables for local development only
+- Proxying API requests through a backend service
+- Validating and sanitizing user input
+- Avoiding storage of sensitive data in `localStorage`
+- Adding rate limiting and secure headers in production deployments
 
-## 🔧 Key Technical Decisions
-
-| Decision | Reason |
-|----------|--------|
-| **Local fonts** over `next/font/google` | Avoids Turbopack build failures when Google Fonts is unreachable |
-| **`unoptimized: true` for images** | Bypasses SSRF protection issues with private DNS resolution |
-| **Server-only API layer** | Keeps API key secure; never shipped to the client |
-| **`suppressHydrationWarning` on body** | Handles browser extension attributes (e.g., `cz-shortcut-listen`) |
-| **`data-scroll-behavior="smooth"` on html** | Official Next.js 16 requirement for smooth scroll control |
-| **Centralized FavoriteButton** | Single source of truth for the most-used interaction |
+> [!WARNING]
+> Do not commit API keys, tokens, or secrets to the repository.
 
 ---
 
-## 👨‍💻 Author
+## 🗺️ Possible Improvements
 
-**Alireza Fallah** — Frontend Developer
+- [ ] Backend API integration for persistent favorites
+- [ ] User authentication and personalized accounts
+- [ ] Shopping list generator from selected recipes
+- [ ] Meal planning calendar
+- [ ] Recipe ratings and reviews
+- [ ] Advanced filtering by nutrition, dietary restrictions, and prep time
+- [ ] Offline support and PWA features
+- [ ] Multi-language support
 
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/alirezafallah-dev)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/alirezafallah-dev/)
-[![Portfolio](https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://practice-projects-recipe-finder.vercel.app/)
+---
+
+## 🤝 Contributing
+
+Contributions and suggestions are welcome.
+
+1. Fork the repository.
+
+2. Create a feature branch:
+
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+
+3. Make your changes and commit them:
+
+   ```bash
+   git commit -m "Add your feature"
+   ```
+
+4. Push your branch:
+
+   ```bash
+   git push origin feature/your-feature
+   ```
+
+5. Open a Pull Request.
+
+---
+
+## 📄 License
+
+This project is available under the [MIT License](LICENSE).
+
+---
+
+## 👤 Author
+
+**Alireza Fallah**
+
+- GitHub: [@alirezafallah-dev](https://github.com/alirezafallah-dev)
+- Email: [alirezafallah.dev@gmail.com](mailto:alirezafallah.dev@gmail.com)
 
 ---
 
 <div align="center">
 
-**⭐ If this project helped you, consider giving the repository a star!**
+Built with ❤️ by **Alireza Fallah**
 
-*Built with ❤️ and 🍅 — A love letter to home cooking.*
+If you find RecipeFinder useful, consider giving the repository a ⭐
+
+<br />
+
+[![GitHub](https://img.shields.io/badge/GitHub-111827?style=for-the-badge&logo=github&logoColor=white)](https://github.com/alirezafallah-dev)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-6366F1?style=for-the-badge&logo=vercel&logoColor=white)](https://YOUR-RECIPE-FINDER-DEMO-URL.vercel.app/)
+[![Email](https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:alirezafallah.dev@gmail.com)
 
 </div>
