@@ -1,100 +1,107 @@
-::: {align="center"}
-# TaskFlow
+<div align="center">
 
-**A modern workspace for managing projects, tasks, and team progress.**
+# 🚀 TaskFlow
 
-[![Live
-Demo](https://img.shields.io/badge/▶%20Live%20Demo-6366F1?style=for-the-badge)](https://taskflow-81ik6obrm-arf16.vercel.app)
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=20232A)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vite.dev/)
-[![Tailwind
-CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+**Modern Team Task Manager**
+
+Organize projects, manage tasks, and keep your team moving forward.
+
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Open_TaskFlow-6366F1?style=for-the-badge)](https://taskflow-arf16.vercel.app/)
+[![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react&logoColor=20232A)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Framer Motion](https://img.shields.io/badge/Framer_Motion-11-0055FF?style=flat-square&logo=framer&logoColor=white)](https://www.framer.com/motion/)
 [![License](https://img.shields.io/badge/License-MIT-16A34A?style=flat-square)](LICENSE)
-:::
 
-------------------------------------------------------------------------
+</div>
 
-## Overview
+---
 
-TaskFlow is a responsive team task management application that helps
-teams organize projects, track tasks, and monitor progress from one
-workspace.
+## ✨ Overview
 
-It combines a Kanban workflow, project management tools, team insights,
-and a clean interface with light and dark themes.
+TaskFlow is a responsive team task management application built to help teams organize projects, track work, and monitor progress in one place.
 
-## Features
+It brings together a Kanban board, project and team management, dashboard analytics, notifications, and a polished interface with dark and light themes.
 
--   **Dashboard:** View task statistics, project progress, team
-    performance, and urgent tasks.
--   **Project management:** Create and organize projects, track
-    progress, search, and filter by status.
--   **Kanban board:** Move tasks between workflow stages using drag and
-    drop.
--   **Task management:** Create and edit tasks with priorities,
-    assignees, and due dates.
--   **Team management:** Browse team members, roles, and performance
-    information.
--   **Notifications:** Keep track of overdue, due-today, and upcoming
-    tasks.
--   **Authentication:** Login, registration, protected routes, and
-    role-based access.
--   **Personalization:** Responsive layout, light/dark themes, and
-    smooth UI transitions.
+---
 
-## Live Demo
+## 🎬 Live Demo
 
-```{=html}
 <p align="center">
-```
-`<a href="https://taskflow-81ik6obrm-arf16.vercel.app">`{=html}
-`<img src="https://img.shields.io/badge/OPEN%20TASKFLOW-Live%20Preview-6366F1?style=for-the-badge&logo=vercel&logoColor=white" alt="Open TaskFlow live demo" />`{=html}
-`</a>`{=html}
-```{=html}
+  <a href="https://taskflow-arf16.vercel.app/">
+    <img src="https://img.shields.io/badge/EXPLORE%20TASKFLOW-Launch%20Live%20Demo-6366F1?style=for-the-badge&logo=vercel&logoColor=white" alt="Launch TaskFlow live demo" />
+  </a>
 </p>
-```
-### Demo accounts
 
-Use any of the following accounts to explore the application:
+### Demo Accounts
 
-  Role          Email                 Password
-  ------------- --------------------- ----------
-  Admin         `admin@example.com`   `123456`
-  Developer     `john@example.com`    `123456`
-  Designer      `sarah@example.com`   `123456`
-  Developer     `mike@example.com`    `123456`
-  QA Engineer   `emma@example.com`    `123456`
+These credentials are provided for demonstration and testing only.
 
-`<sub>`{=html}These are demo credentials for testing only. Do not use
-them for real accounts.`</sub>`{=html}
+| Role        | Email                 | Password |
+| ----------- | --------------------- | -------- |
+| Admin       | `admin@example.com`   | `123456` |
+| Developer   | `john@example.com`    | `123456` |
+| Designer    | `sarah@example.com`   | `123456` |
+| Developer   | `mike@example.com`    | `123456` |
+| QA Engineer | `emma@example.com`    | `123456` |
 
-## Tech Stack
+> ⚠️ **Note:** This application currently uses a client-side/demo authentication flow and is not intended for production use with real user data.
 
-  Category          Technologies
-  ----------------- -----------------------------------
-  Frontend          React 19, Vite 8
-  Routing & State   React Router 7, React Context API
-  Styling           Tailwind CSS 3.4
-  UI & Animation    Lucide React, Framer Motion
-  Charts & Dates    Recharts, date-fns
-  Tooling           ESLint, PostCSS, Autoprefixer
+---
 
-## Getting Started
+## 🚀 Features
+
+| Area              | Highlights                                                                 |
+| ----------------- | -------------------------------------------------------------------------- |
+| Dashboard         | Task statistics, interactive charts, team performance, and urgent tasks    |
+| Projects          | Create and organize projects, track progress, search, and filter by status |
+| Kanban Board      | Drag and drop tasks across To Do, In Progress, In Review, and Done        |
+| Task Management   | Create and edit tasks with priorities, assignees, and due dates            |
+| Team              | Member profiles, role badges, performance metrics, and role filtering      |
+| Notifications     | Overdue, due-today, and upcoming task alerts with quick actions            |
+| Authentication    | Login, registration, protected routes, and role-based access               |
+| User Experience   | Responsive layout, dark/light mode, animations, and toast notifications    |
+
+---
+
+## 🧰 Tech Stack
+
+| Category        | Technologies                                      |
+| --------------- | ------------------------------------------------- |
+| Core            | React 19.2, Vite 8.3                              |
+| Routing & State | React Router DOM 7, React Context API             |
+| Styling & Motion| Tailwind CSS 3.4, PostCSS, Autoprefixer, Framer Motion 11 |
+| UI & Data       | Lucide React, Recharts, date-fns                  |
+| Code Quality    | ESLint                                            |
+
+---
+
+## ⚙️ Getting Started
 
 ### Prerequisites
 
--   Node.js 20.19+ or 22.12+
--   npm
--   Git
+Make sure you have the following installed on your machine:
+
+- Node.js `18+`
+- npm `9+`
+- Git
+
+Check your installed versions:
+
+```bash
+node --version
+npm --version
+git --version
+```
 
 ### Installation
 
-``` bash
+```bash
 # Clone the repository
-git clone https://github.com/alirezafallah-dev/Practice-Projects.git
+git clone https://github.com/alirezafallah-dev/practice-projects.git
 
-# Open the project directory
-cd Practice-Projects/team-task-manager
+# Move into the project directory
+cd practice-projects/team-task-manager
 
 # Install dependencies
 npm install
@@ -103,60 +110,152 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### Available Scripts
+---
 
-  Command             Description
-  ------------------- ------------------------------
-  `npm run dev`       Start the development server
-  `npm run build`     Create a production build
-  `npm run preview`   Preview the production build
-  `npm run lint`      Run ESLint
+## 📜 Available Scripts
 
-## Project Structure
+| Command           | Description                      |
+| ----------------- | -------------------------------- |
+| `npm run dev`     | Start the development server     |
+| `npm run build`   | Create a production build        |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint`    | Run ESLint                       |
 
-``` text
+---
+
+## 🖼️ Screenshots
+
+Add application screenshots to a `screenshots/` directory and update the image paths below when they are available.
+
+| Screen           | Image                             |
+| ---------------- | --------------------------------- |
+| Authentication   | `screenshots/authentication.png`  |
+| Dashboard        | `screenshots/dashboard.png`       |
+| Projects         | `screenshots/projects.png`        |
+| Kanban Board     | `screenshots/kanban-board.png`    |
+| Team Members     | `screenshots/team-members.png`    |
+| Notifications    | `screenshots/notifications.png`   |
+
+<!--
+When screenshots are added, replace the table above with:
+
+![Dashboard](screenshots/dashboard.png)
+-->
+
+---
+
+## 📁 Project Structure
+
+```text
 team-task-manager/
-├── public/                 # Static assets
-├── src/
-│   ├── components/         # Shared UI and layout components
-│   ├── constants/          # Application constants
-│   ├── context/            # Global state and toast contexts
-│   ├── pages/              # Application pages
-│   ├── utils/              # Utility functions
-│   ├── App.jsx             # Root component
-│   ├── main.jsx            # Application entry point
-│   └── index.css           # Global styles
-├── index.html
-├── package.json
-├── vite.config.js
-└── README.md
+ ├── public/                     # Static assets
+ ├── src/
+ │   ├── components/
+ │   │   ├── Layout.jsx          # Main application layout
+ │   │   └── ProtectedRoute.jsx  # Protected route wrapper
+ │   ├── constants/
+ │   │   └── index.js            # Application constants
+ │   ├── context/
+ │   │   ├── AppContext.jsx      # Global application state
+ │   │   └── ToastContext.jsx    # Toast notification state
+ │   ├── pages/
+ │   │   ├── LoginPage.jsx
+ │   │   ├── RegisterPage.jsx
+ │   │   ├── DashboardPage.jsx
+ │   │   ├── ProjectsPage.jsx
+ │   │   ├── ProjectDetailPage.jsx
+ │   │   └── UsersPage.jsx
+ │   ├── utils/
+ │   │   └── date.js             # Date utility functions
+ │   ├── App.jsx                 # Root application component
+ │   ├── main.jsx                # Application entry point
+ │   └── index.css               # Global styles
+ ├── .gitignore
+ ├── index.html
+ ├── package.json
+ ├── postcss.config.js
+ ├── tailwind.config.js
+ ├── vite.config.js
+ └── README.md
 ```
 
-## Security Note
+---
 
-TaskFlow currently uses a client-side/demo authentication flow. It is
-intended for learning and portfolio demonstration, not production use
-with real user data.
+## 🔐 Security
 
-A production deployment should use a secure backend for authentication,
-password hashing, session handling, and server-side authorization.
+TaskFlow currently uses a client-side/demo authentication flow. It is intended for learning and portfolio demonstration, not for handling real user data.
 
-## Contributing
+Before using an application like this in production, implement:
 
-Suggestions and improvements are welcome. Feel free to open an issue or
-submit a pull request.
+- Backend authentication
+- Secure password handling
+- Server-side authorization
+- Secure session management
+- Input validation and sanitization
+- Protection against common web vulnerabilities
 
-## License
+---
 
-This project is licensed under the [MIT License](LICENSE).
+## 🗺️ Possible Improvements
 
-------------------------------------------------------------------------
+- [ ] Backend API integration
+- [ ] Real-time collaboration
+- [ ] Task attachments, comments, and activity feeds
+- [ ] Calendar view and time tracking
+- [ ] Data export and advanced reports
+- [ ] Multi-language support
+- [ ] Team invitations and expanded permissions
 
-::: {align="center"}
-**Built with care by [Alireza
-Fallah](https://github.com/alirezafallah-dev)**
+---
+
+## 🤝 Contributing
+
+Contributions and suggestions are welcome.
+
+1. Fork the repository.
+2. Create a feature branch:
+
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+
+3. Make your changes and commit them:
+
+   ```bash
+   git commit -m "Add your feature"
+   ```
+
+4. Push your branch:
+
+   ```bash
+   git push origin feature/your-feature
+   ```
+
+5. Open a Pull Request.
+
+---
+
+## 📄 License
+
+This project is available under the [MIT License](LICENSE).
+
+---
+
+## 👤 Author
+
+**Alireza Fallah**
+
+- GitHub: [@alirezafallah-dev](https://github.com/alirezafallah-dev)
+- Email: [alirezafallah.dev@gmail.com](mailto:alirezafallah.dev@gmail.com)
+
+---
+
+<div align="center">
+
+Built with ❤️ by **Alireza Fallah**
 
 If you find TaskFlow useful, consider giving the repository a ⭐
-:::
+
+</div>
