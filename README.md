@@ -1,262 +1,159 @@
-# 🚀 Practice Projects
+<div align="center">
 
-### A Collection of Modern Frontend Applications, Experiments & Learning Projects
+# 🧩 Practice Projects
 
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat&logo=vite&logoColor=white)](https://vite.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3%20%2F%204-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
+### **Modern Frontend Practice Portfolio**
 
----
+A collection of responsive React applications for task management, recipes, blogging, and personal finance — built with clean UI, practical patterns, and deployable demos.
 
-## 📖 About
+<br />
 
-Welcome to **Practice Projects** — a growing collection of web applications, frontend experiments, and practical development projects.
+<p align="center">
+  <a href="#projects">
+    <img src="https://img.shields.io/badge/🚀%20Live%20Projects-View%20All%20Demos-6366F1?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Projects" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/alirezafallah-dev/Practice-Projects" target="_blank" rel="noreferrer">
+    <img src="https://img.shields.io/badge/📂%20GitHub-Repository-111827?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repository" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/alirezafallah-dev/Practice-Projects/issues/new?labels=bug&title=%5BBug%5D%3A%20" target="_blank" rel="noreferrer">
+    <img src="https://img.shields.io/badge/🐞%20Report%20Bug-Create%20Issue-EF4444?style=for-the-badge&logo=github&logoColor=white" alt="Report Bug" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/alirezafallah-dev/Practice-Projects/issues/new?labels=enhancement&title=%5BFeature%5D%3A%20" target="_blank" rel="noreferrer">
+    <img src="https://img.shields.io/badge/💡%20Request%20Feature-Suggest%20Idea-10B981?style=for-the-badge&logo=github&logoColor=white" alt="Request Feature" />
+  </a>
+</p>
 
-This repository serves as my personal development playground, where I explore modern frontend technologies, build functional applications, experiment with different architectures, and continuously improve my development skills.
+<br />
 
-Rather than focusing only on isolated coding exercises, I use practical projects to turn concepts into working applications.
+![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react&logoColor=20232A)
+![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat-square&logo=tailwindcss&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![License](https://img.shields.io/badge/License-MIT-16A34A?style=flat-square)
 
-Each project is maintained in its own directory and may have its own architecture, dependencies, documentation, and development workflow.
-
-### 🎯 Repository Goals
-
-- Build practical applications using modern frontend technologies.
-- Improve React and Next.js development skills.
-- Explore state management and component architecture.
-- Develop responsive and accessible user interfaces.
-- Practice working with APIs and external data.
-- Experiment with modern UI/UX patterns and animations.
-- Improve code organization, maintainability, and development workflows.
-
----
-
-## 📂 Projects
-
-The repository currently contains four independent projects.
-
-### 01. 💰 Expense Tracker Panel
-
-**A modern expense tracking and financial dashboard application.**
-
-A frontend application focused on managing financial records and presenting structured financial data through an interactive dashboard.
-
-**Technologies:**
-- React 19
-- TypeScript
-- Redux Toolkit
-- React Redux
-- Material UI (MUI)
-- Recharts
-- React Router
-- PapaParse
-- Vite
-- Tailwind CSS
-
-**Key Technical Areas:**
-- Centralized state management with Redux Toolkit.
-- Data visualization with Recharts.
-- Component-based application architecture.
-- Financial data handling.
-- CSV data processing.
-- Client-side navigation.
-
-📁 [View Source Code](./expense-tracker-panel)
-
-📖 [Project Documentation](./expense-tracker-panel/README.md)
+</div>
 
 ---
 
-### 02. ✍️ Modern Blog
+<a id="projects"></a>
+## 🚀 Featured Projects
 
-**A modern, responsive blogging application built with Next.js.**
+<!-- If RecipeFinder uses a different Vercel domain, replace recipe-finder-arf16.vercel.app in this file. -->
 
-A clean and minimal blog experience featuring dynamic blog content, individual post pages, responsive layouts, and smooth interface interactions.
+| Project | Description | Live Demo | Source | Docs |
+| ------- | ----------- | --------- | ------ | ---- |
+| **🗂️ TaskFlow** | Modern team task manager with dashboard, projects, Kanban board, team management, and notifications. | [🚀 Open Demo](https://taskflow-arf16.vercel.app/) | [💻 Code](https://github.com/alirezafallah-dev/Practice-Projects/tree/main/team-task-manager) | [📘 README](https://github.com/alirezafallah-dev/Practice-Projects/blob/main/team-task-manager/README.md) |
+| **🍳 RecipeFinder** | Recipe discovery app with search, filters, recipe cards, detailed views, and favorites. | [🚀 Open Demo](https://recipe-finder-arf16.vercel.app/) | [💻 Code](https://github.com/alirezafallah-dev/Practice-Projects/tree/main/recipe-finder) | [📘 README](https://github.com/alirezafallah-dev/Practice-Projects/blob/main/recipe-finder/README.md) |
+| **📝 ModernBlog** | Clean blog platform with article feed, categories, search, and detailed post pages. | [🚀 Open Demo](https://practice-projects-arf16.vercel.app/) | [💻 Code](https://github.com/alirezafallah-dev/Practice-Projects/tree/main/modern-blog) | [📘 README](https://github.com/alirezafallah-dev/Practice-Projects/blob/main/modern-blog/README.md) |
+| **💰 ExpenseTracker Panel** | Expense tracking dashboard with transactions, charts, budgets, analytics, and responsive UI. | [🚀 Open Demo](https://practice-projects-w7nd.vercel.app/) | [💻 Code](https://github.com/alirezafallah-dev/Practice-Projects/tree/main/expense-tracker-panel) | [📘 README](https://github.com/alirezafallah-dev/Practice-Projects/blob/main/expense-tracker-panel/README.md) |
 
-**Technologies:**
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS 4
-- Lucide React
-- JSONPlaceholder API
-- Picsum Photos
+<br />
 
-**Key Features:**
-- Modern and minimal interface.
-- Fully responsive layouts.
-- Dynamic blog post content.
-- Individual post detail pages.
-- External REST API integration.
-- Smooth animations and transitions.
-- SEO-friendly metadata.
-- Type-safe development with TypeScript.
+<p align="center">
+  <a href="https://taskflow-arf16.vercel.app/" target="_blank" rel="noreferrer">
+    <img src="https://img.shields.io/badge/🗂️%20TaskFlow-Open%20Demo-6366F1?style=for-the-badge&logo=vercel&logoColor=white" alt="TaskFlow live demo" />
+  </a>
+  &nbsp;
+  <a href="https://recipe-finder-arf16.vercel.app/" target="_blank" rel="noreferrer">
+    <img src="https://img.shields.io/badge/🍳%20RecipeFinder-Open%20Demo-F59E0B?style=for-the-badge&logo=vercel&logoColor=white" alt="RecipeFinder live demo" />
+  </a>
+  <br /><br />
+  <a href="https://practice-projects-arf16.vercel.app/" target="_blank" rel="noreferrer">
+    <img src="https://img.shields.io/badge/📝%20ModernBlog-Open%20Demo-10B981?style=for-the-badge&logo=vercel&logoColor=white" alt="ModernBlog live demo" />
+  </a>
+  &nbsp;
+  <a href="https://practice-projects-w7nd.vercel.app/" target="_blank" rel="noreferrer">
+    <img src="https://img.shields.io/badge/💰%20ExpenseTracker-Open%20Demo-EF4444?style=for-the-badge&logo=vercel&logoColor=white" alt="ExpenseTracker live demo" />
+  </a>
+</p>
 
-**Architecture:**
-
-Built using the Next.js App Router with reusable components and dynamic routing.
-
-📁 [View Source Code](./modern-blog)
-
-📖 [Project Documentation](./modern-blog/README.md)
-
----
-
-### 03. 🍳 Recipe Finder
-
-**A recipe discovery application.**
-
-A dedicated project focused on exploring recipe discovery experiences and building a practical food-related web application.
-
-This project is part of my hands-on frontend development practice.
-
-📁 [View Source Code](./recipe-finder)
-
-📖 [Project Documentation](./recipe-finder/README.md)
+> [!TIP]
+> Each project has its own detailed README inside its folder.
 
 ---
 
-### 04. 🚀 TaskFlow — Team Task Manager
+## ✨ What's Inside
 
-**A modern team task management and project organization application.**
+This repository contains a set of frontend practice projects focused on modern UI, responsive design, reusable components, and realistic application flows.
 
-TaskFlow is a feature-rich project management application designed to help teams organize projects, manage tasks, monitor progress, and improve collaboration.
+### 🗂️ TaskFlow
 
-**Live Demo:** [Open TaskFlow](https://taskflow-81ik6obrm-arf16.vercel.app)
+A team task management application with:
 
-**Technologies:**
-- React 19
-- Vite
-- React Router DOM
-- Tailwind CSS 3
-- Framer Motion
-- Recharts
-- Lucide React
-- date-fns
-- Context API
+- Dashboard analytics
+- Project management
+- Kanban board
+- Task assignment
+- Team member views
+- Notifications
+- Dark/light theme support
 
-**Key Features:**
+### 🍳 RecipeFinder
 
-**📊 Dashboard & Analytics**
-- Interactive charts and statistics.
-- Task distribution overview.
-- Team performance metrics.
-- Project progress tracking.
-- Urgent task monitoring.
+A recipe discovery application with:
 
-**📋 Task Management**
-- Interactive Kanban board.
-- Native HTML5 drag-and-drop.
-- Four task workflow stages:
-  - To Do
-  - In Progress
-  - In Review
-  - Done
-- Task priorities and due dates.
-- Task creation and editing.
+- Recipe search
+- Category filters
+- Recipe cards
+- Detailed recipe pages
+- Favorites management
+- Responsive layout
 
-**📁 Project Management**
-- Project creation and organization.
-- Project status filtering.
-- Search functionality.
-- Progress indicators.
-- Team member assignments.
+### 📝 ModernBlog
 
-**👥 Team Management**
-- Team member profiles.
-- Role-based identification.
-- Performance statistics.
-- Member filtering.
+A blog platform with:
 
-**🎨 User Experience**
-- Modern glassmorphism interface.
-- Dark and light themes.
-- Responsive layouts.
-- Smooth animations.
-- Interactive notifications.
-- Toast messages.
+- Article listing
+- Category browsing
+- Search functionality
+- Article detail pages
+- Clean typography
+- Responsive design
 
-**🔐 Authentication**
-- Login and registration interfaces.
-- Protected routes.
-- Role-based UI access.
-- Persistent demo sessions.
+### 💰 ExpenseTracker Panel
 
-> Note: TaskFlow currently uses a client-side demo authentication approach and is intended for learning and portfolio demonstration rather than production authentication.
+A personal finance dashboard with:
 
-📁 [View Source Code](./team-task-manager)
-
-📖 [Project Documentation](./team-task-manager/README.md)
-
-🌐 [Live Application](https://taskflow-81ik6obrm-arf16.vercel.app)
+- Income and expense tracking
+- Transaction history
+- Category-based reporting
+- Charts and analytics
+- Budget monitoring
+- Responsive dashboard layout
 
 ---
 
-## 🛠️ Technology Stack
+## 🧰 Shared Tech Stack
 
-The projects in this repository use different technologies depending on their requirements and implementation.
+| Category         | Technologies                                      |
+| ---------------- | ------------------------------------------------- |
+| Core             | React, Vite                                       |
+| Routing          | React Router DOM                                  |
+| State Management | React Context API, localStorage                   |
+| Styling          | Tailwind CSS, PostCSS, Autoprefixer               |
+| Animation        | Framer Motion                                     |
+| UI Icons         | Lucide React                                      |
+| Charts           | Recharts                                          |
+| Date Utilities   | date-fns                                          |
+| Code Quality     | ESLint                                            |
+| Deployment       | Vercel                                            |
 
-### Frontend Development
-
-| Technology | Purpose |
-|---|---|
-| React | Component-based UI development |
-| Next.js | React framework and application routing |
-| TypeScript | Static typing and maintainability |
-| JavaScript | Application logic |
-| Vite | Development and build tooling |
-| Tailwind CSS | Utility-first styling |
-| Material UI | UI components and design systems |
-
-### State Management & Routing
-
-| Technology | Purpose |
-|---|---|
-| Redux Toolkit | Centralized application state |
-| React Context API | Shared application state |
-| React Redux | React and Redux integration |
-| React Router | Client-side navigation |
-
-### UI & Visualization
-
-| Technology | Purpose |
-|---|---|
-| Framer Motion | Animations and transitions |
-| Recharts | Charts and data visualization |
-| Lucide React | Icon system |
-| date-fns | Date manipulation |
-
-### Data & Utilities
-
-| Technology | Purpose |
-|---|---|
-| REST APIs | External data integration |
-| JSONPlaceholder | Mock API data |
-| PapaParse | CSV parsing and processing |
-| UUID | Unique identifier generation |
-
-### Development Tools
-
-- Git & GitHub
-- npm
-- ESLint
-- Vercel
-- Visual Studio Code
+> [!NOTE]
+> Exact versions may vary slightly between projects. Check each project’s `package.json` for precise dependencies.
 
 ---
 
-## 🚀 Getting Started
-
-Each project is an independent application with its own dependencies and configuration.
+## ⚙️ Getting Started
 
 ### Prerequisites
 
-Make sure you have the following installed:
+Make sure you have the following installed on your machine:
 
-- [Node.js](https://nodejs.org/)
-- npm
+- Node.js `18+`
+- npm `9+`
 - Git
 
 Check your installed versions:
@@ -267,74 +164,109 @@ npm --version
 git --version
 ```
 
-### 1. Clone the Repository
+### Run Any Project
 
 ```bash
+# Clone the repository
 git clone https://github.com/alirezafallah-dev/Practice-Projects.git
-```
 
-### 2. Navigate to the Repository
-
-```bash
+# Move into the repository
 cd Practice-Projects
-```
 
-### 3. Choose a Project
-
-For example, to run TaskFlow:
-
-```bash
+# Choose one project folder, for example:
 cd team-task-manager
-```
 
-### 4. Install Dependencies
-
-```bash
+# Install dependencies
 npm install
-```
 
-### 5. Start the Development Server
-
-```bash
+# Start the development server
 npm run dev
 ```
 
-Follow the terminal output to open the application in your browser.
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Available Project Folders
+
+```text
+team-task-manager
+recipe-finder
+modern-blog
+expense-tracker-panel
+```
+
+> [!NOTE]
+> If a project uses a different local port, check the terminal output after running `npm run dev`.
 
 ---
 
-## 📦 Running Individual Projects
+## 📜 Available Scripts
 
-Use the following commands depending on which project you want to run.
+Most projects use the standard Vite scripts:
 
-| Project | Directory | Development Command |
-|---|---|---|
-| Expense Tracker | `expense-tracker-panel` | `npm run dev` |
-| Modern Blog | `modern-blog` | `npm run dev` |
-| Recipe Finder | `recipe-finder` | Check its project README |
-| TaskFlow | `team-task-manager` | `npm run dev` |
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Start the development server         |
+| `npm run build`   | Create a production build            |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint`    | Run ESLint                           |
 
-### Production Build
+---
 
-Projects that provide a build script can generate optimized production files.
+## ☁️ Vercel Deployments
 
-```bash
-npm run build
-```
+Each project is deployed separately on Vercel.
 
-For Vite applications, you can preview the production build using:
+| Project | Live URL | Suggested Root Directory |
+| ------- | -------- | ------------------------ |
+| TaskFlow | [https://taskflow-arf16.vercel.app/](https://taskflow-arf16.vercel.app/) | `team-task-manager` |
+| RecipeFinder | [https://recipe-finder-arf16.vercel.app/](https://recipe-finder-arf16.vercel.app/) | `recipe-finder` |
+| ModernBlog | [https://practice-projects-arf16.vercel.app/](https://practice-projects-arf16.vercel.app/) | `modern-blog` |
+| ExpenseTracker Panel | [https://practice-projects-w7nd.vercel.app/](https://practice-projects-w7nd.vercel.app/) | `expense-tracker-panel` |
 
-```bash
-npm run preview
-```
+### Deployment Tips
 
-For Next.js applications, use:
+When deploying an individual project from this monorepo-style repository on Vercel:
 
-```bash
-npm run start
-```
+1. Import the GitHub repository into Vercel.
+2. Set the **Root Directory** to the specific project folder, for example:
+   ```text
+   team-task-manager
+   ```
+3. Use the framework preset:
+   ```text
+   Vite
+   ```
+4. Build command:
+   ```bash
+   npm run build
+   ```
+5. Output directory:
+   ```text
+   dist
+   ```
+6. Add environment variables with the `VITE_` prefix if the project needs them.
 
-Refer to each project's README for its specific configuration and requirements.
+> [!IMPORTANT]
+> Never commit real API keys, tokens, or secrets directly into the repository.
+
+---
+
+## 🖼️ Project Previews
+
+Add preview images to an `assets/previews/` directory and update the image paths below when they are available.
+
+| Project | Preview Image |
+| ------- | ------------- |
+| TaskFlow | `assets/previews/taskflow.png` |
+| RecipeFinder | `assets/previews/recipe-finder.png` |
+| ModernBlog | `assets/previews/modern-blog.png` |
+| ExpenseTracker Panel | `assets/previews/expense-tracker-panel.png` |
+
+<!--
+When preview images are added, replace the table above with:
+
+![TaskFlow Preview](assets/previews/taskflow.png)
+-->
 
 ---
 
@@ -342,128 +274,121 @@ Refer to each project's README for its specific configuration and requirements.
 
 ```text
 Practice-Projects/
-│
-├── expense-tracker-panel/
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── README.md
-│
-├── modern-blog/
-│   ├── app/
-│   ├── public/
-│   ├── package.json
-│   └── README.md
-│
-├── recipe-finder/
-│   └── README.md
-│
-├── team-task-manager/
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── README.md
-│
-├── .gitignore
-└── README.md
+ ├── team-task-manager/          # TaskFlow application
+ ├── recipe-finder/              # RecipeFinder application
+ ├── modern-blog/                # ModernBlog application
+ ├── expense-tracker-panel/      # ExpenseTracker Panel application
+ ├── assets/
+ │   └── previews/               # Optional project preview images
+ ├── .gitignore
+ ├── LICENSE
+ └── README.md
 ```
 
-Each project may contain additional folders, configuration files, components, and resources not shown in this simplified overview.
+Each project folder usually contains its own:
+
+```text
+src/
+public/
+index.html
+package.json
+vite.config.js
+tailwind.config.js
+postcss.config.js
+README.md
+```
 
 ---
 
-## 📚 Learning & Development
+## 🔐 Security
 
-This repository represents an ongoing learning process focused on practical software development.
+These projects are primarily frontend practice applications. Some of them may use demo authentication, local storage, or client-side data flows.
 
-### Areas of Focus
+Before using a similar application in production, consider implementing:
 
-- Modern React development.
-- Advanced React Hooks and patterns.
-- Component architecture and reusability.
-- State management strategies.
-- TypeScript and type-safe development.
-- Next.js application development.
-- Responsive UI/UX implementation.
-- API integration and asynchronous data handling.
-- Performance optimization.
-- Code quality and maintainability.
+- Backend authentication
+- Secure password handling
+- Server-side authorization
+- Secure session management
+- Input validation and sanitization
+- API key protection
+- Rate limiting
+- Secure headers
+- Proper data persistence
 
-### Development Philosophy
-
-**Build → Experiment → Improve → Document**
-
-My approach is based on learning through implementation:
-
-1. **Build** — Turn ideas and concepts into functional applications.
-2. **Experiment** — Explore different technologies and implementation approaches.
-3. **Improve** — Refactor code, improve UX, and optimize performance.
-4. **Document** — Keep project documentation clear and organized.
-5. **Repeat** — Apply lessons learned to future projects.
+> [!WARNING]
+> Do not store sensitive user data, real credentials, or production secrets in client-side demo applications.
 
 ---
 
-## 🗺️ Future Improvements
+## 🗺️ Possible Improvements
 
-This repository will continue to evolve as I explore new technologies and build more applications.
-
-Potential areas for future development include:
-
-- [ ] Add more React and Next.js applications.
-- [ ] Expand TypeScript usage across projects.
-- [ ] Introduce automated testing with Vitest.
-- [ ] Improve accessibility and responsive design.
-- [ ] Explore advanced state management patterns.
-- [ ] Add more API-driven applications.
-- [ ] Experiment with backend integration.
-- [ ] Improve performance and code quality.
-- [ ] Add screenshots and visual documentation for every project.
-- [ ] Expand project-specific documentation.
+- [ ] Add more practice projects
+- [ ] Create a shared UI component library
+- [ ] Add automated tests
+- [ ] Improve accessibility
+- [ ] Add SEO optimization where relevant
+- [ ] Integrate real backend APIs
+- [ ] Add CI/CD pipelines
+- [ ] Improve documentation for each project
+- [ ] Add live preview images or GIFs
+- [ ] Create a central portfolio landing page
 
 ---
 
-## 🤝 Feedback & Collaboration
+## 🤝 Contributing
 
-I'm always interested in learning, improving, and exploring new ideas.
+Contributions and suggestions are welcome.
 
-If you have suggestions, feedback, or interesting project ideas, feel free to:
+1. Fork the repository.
 
-- Open an issue.
-- Suggest improvements.
-- Report bugs.
-- Share useful resources.
-- Discuss potential collaborations.
+2. Create a feature branch:
 
-Contributions and constructive feedback are welcome.
+   ```bash
+   git checkout -b feature/your-feature
+   ```
 
----
+3. Make your changes and commit them:
 
-## 📫 Connect
+   ```bash
+   git commit -m "Add your feature"
+   ```
 
-**Alireza Fallah**
+4. Push your branch:
 
-GitHub: [@alirezafallah-dev](https://github.com/alirezafallah-dev)
+   ```bash
+   git push origin feature/your-feature
+   ```
 
-Email: alirezafallah.dev@gmail.com
+5. Open a Pull Request.
 
 ---
 
 ## 📄 License
 
-This repository is intended for educational and personal development purposes.
+This project is available under the [MIT License](LICENSE).
 
-The repository declares an MIT license. Please refer to the [LICENSE](./LICENSE) file for the applicable terms.
+---
+
+## 👤 Author
+
+**Alireza Fallah**
+
+- GitHub: [@alirezafallah-dev](https://github.com/alirezafallah-dev)
+- Email: [alirezafallah.dev@gmail.com](mailto:alirezafallah.dev@gmail.com)
 
 ---
 
 <div align="center">
 
-### 🌱 Keep Learning. Keep Building. Keep Improving.
+Built with ❤️ by **Alireza Fallah**
 
-**Every project is another step forward.**
+If you find these projects useful, consider giving the repository a ⭐
 
-Made with ❤️ by **Alireza Fallah**
+<br />
 
-⭐ If you find this repository interesting, consider giving it a star!
+[![GitHub](https://img.shields.io/badge/GitHub-111827?style=for-the-badge&logo=github&logoColor=white)](https://github.com/alirezafallah-dev)
+[![Live Projects](https://img.shields.io/badge/Live%20Projects-6366F1?style=for-the-badge&logo=vercel&logoColor=white)](#projects)
+[![Email](https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:alirezafallah.dev@gmail.com)
 
 </div>
