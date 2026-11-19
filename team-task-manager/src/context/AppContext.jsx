@@ -340,6 +340,22 @@ export function AppProvider({ children }) {
     return { ok: true, user: newUser };
   };
 
+  const updateUser = (userId, updates) => {
+    setUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, ...updates } : u))
+    );
+  };
+
+  const deleteUser = (userId) => {
+    setUsers((prev) => prev.filter((u) => u.id !== userId));
+    // تسک‌های این کاربر رو unassign کن
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.assigneeId === userId ? { ...t, assigneeId: null } : t
+      )
+    );
+  };
+
   const addProject = (project) => {
     const newProject = {
       id: Date.now(),
@@ -404,6 +420,8 @@ export function AppProvider({ children }) {
         login,
         logout,
         register,
+        updateUser,
+        deleteUser,
         addProject,
         updateProject,
         deleteProject,
