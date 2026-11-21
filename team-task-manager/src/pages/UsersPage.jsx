@@ -1,6 +1,7 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext.jsx";
+import ProgressBar from "../components/ProgressBar.jsx";
 import {
   Plus,
   Search,
@@ -57,97 +58,92 @@ const getRoleColor = (role) => {
   }
 };
 
+const EMPTY_STATS = { total: 0, done: 0, inProgress: 0 };
+
 export default function UsersPage() {
   const { users, tasks, currentUser, deleteUser } = useApp();
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const confirm = useConfirm();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
   const [openMenuId, setOpenMenuId] = useState(null);
-  const [actionModal, setActionModal] = useState(null); // { type, user }
-  const menuRef = useRef(null);
-  const confirm = useConfirm();
+  const [actionModal, setActionModal] = useState(null);
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setOpenMenuId(null);
-      }
-    };
-    if (openMenuId !== null) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [openMenuId]);
-
-  // Filter users
   const filteredUsers = useMemo(() => {
+    const q = searchQuery.toLowerCase();
     return users.filter((user) => {
       const matchesSearch =
-        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase());
+        user.name.toLowerCase().includes(q) || user.email.toLowerCase().includes(q);
       const matchesRole = roleFilter === "all" || user.role === roleFilter;
       return matchesSearch && matchesRole;
     });
   }, [users, searchQuery, roleFilter]);
 
-  // Stats
-  const stats = useMemo(() => {
-    return {
-      total: users.length,
-      admins: users.filter((u) => u.role === "admin").length,
-      developers: users.filter((u) => u.role === "developer").length,
-      designers: users.filter((u) => u.role === "designer").length,
-    };
-  }, [users]);
+  const stats = useMemo(() => ({
+    total: users.length,
+    admins: users.filter((u) => u.role === "admin").length,
+    developers: users.filter((u) => u.role === "developer").length,
+    designers: users.filter((u) => u.role === "designer").length,
+  }), [users]);
 
-  // Handle menu actions - REAL FUNCTIONALITY
-  const handleAction = (action, user) => {
+  // یک‌بار محاسبه آمار تسک‌ها برای همه کاربران
+  const statsByUser = useMemo(() => {
+    const map = new Map();
+    for (const t of tasks) {
+      if (t.assigneeId == null) continue;
+      const s = map.get(t.assigneeId) ?? { total: 0, done: 0, inProgress: 0 };
+      s.total++;
+      if (t.status === "done") s.done++;
+      else if (t.status === "in_progress") s.inProgress++;
+      map.set(t.assigneeId, s);
+    }
+    return map;
+  }, [tasks]);
+
+  const handleMenuToggle = useCallback((id) => {
+    setOpenMenuId((prev) => (prev === id ? null : id));
+  }, []);
+
+  const handleAction = useCallback((action, user) => {
     setOpenMenuId(null);
-
     if (action === "remove") {
       if (user.id === currentUser?.id) {
         toast.error("You cannot remove yourself!");
         return;
       }
-      if (confirm(`Remove ${user.name} from the team? All their tasks will be unassigned.`)) {
-        deleteUser(user.id);
-        toast.success(`${user.name} removed from team`);
-      }
+      confirm({
+        title: "Remove Member",
+        message: `Remove ${user.name} from the team? All their tasks will be unassigned.`,
+        confirmLabel: "Remove",
+        variant: "danger",
+      }).then((ok) => {
+        if (ok) {
+          deleteUser(user.id);
+          toast.success(`${user.name} removed from team`);
+        }
+      });
     } else {
       setActionModal({ type: action, user });
     }
-  };
+  }, [currentUser?.id, deleteUser, toast, confirm]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
+    visible: { opacity: 1, transition: { staggerChildren: 0.04 } },
   };
-
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
+    hidden: { opacity: 0, y: 8 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: "easeOut" } },
   };
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-5"
-    >
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-5">
       {/* Header */}
-      <motion.div
-        variants={itemVariants}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-      >
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Team Members
-          </h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Team Members</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             Manage your team and their performance
           </p>
@@ -164,34 +160,11 @@ export default function UsersPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div
-        variants={itemVariants}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3"
-      >
-        <StatCard
-          label="Total Members"
-          value={stats.total}
-          icon={<Users className="w-4 h-4" />}
-          gradient="from-blue-500 to-cyan-500"
-        />
-        <StatCard
-          label="Admins"
-          value={stats.admins}
-          icon={<Crown className="w-4 h-4" />}
-          gradient="from-amber-500 to-orange-500"
-        />
-        <StatCard
-          label="Developers"
-          value={stats.developers}
-          icon={<Code2 className="w-4 h-4" />}
-          gradient="from-indigo-500 to-blue-500"
-        />
-        <StatCard
-          label="Designers"
-          value={stats.designers}
-          icon={<Palette className="w-4 h-4" />}
-          gradient="from-pink-500 to-rose-500"
-        />
+      <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <StatCard label="Total Members" value={stats.total} icon={<Users className="w-4 h-4" />} gradient="from-blue-500 to-cyan-500" />
+        <StatCard label="Admins" value={stats.admins} icon={<Crown className="w-4 h-4" />} gradient="from-amber-500 to-orange-500" />
+        <StatCard label="Developers" value={stats.developers} icon={<Code2 className="w-4 h-4" />} gradient="from-indigo-500 to-blue-500" />
+        <StatCard label="Designers" value={stats.designers} icon={<Palette className="w-4 h-4" />} gradient="from-pink-500 to-rose-500" />
       </motion.div>
 
       {/* Search and Filters */}
@@ -206,7 +179,6 @@ export default function UsersPage() {
             className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
           />
         </div>
-
         <div className="flex flex-wrap gap-1.5">
           {["all", "admin", "manager", "developer", "designer", "qa"].map((role) => (
             <button
@@ -225,10 +197,7 @@ export default function UsersPage() {
       </motion.div>
 
       {/* Users Grid */}
-      <motion.div
-        variants={itemVariants}
-        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
-      >
+      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         <AnimatePresence mode="popLayout">
           {filteredUsers.length === 0 ? (
             <motion.div
@@ -238,13 +207,9 @@ export default function UsersPage() {
               className="col-span-full flex flex-col items-center justify-center py-12 text-center"
             >
               <Users className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-3" />
-              <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                No members found
-              </h3>
+              <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-1">No members found</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                {searchQuery || roleFilter !== "all"
-                  ? "Try adjusting your filters"
-                  : "Add your first team member"}
+                {searchQuery || roleFilter !== "all" ? "Try adjusting your filters" : "Add your first team member"}
               </p>
               <button
                 onClick={() => setShowAddModal(true)}
@@ -259,12 +224,11 @@ export default function UsersPage() {
               <UserCard
                 key={user.id}
                 user={user}
-                tasks={tasks}
+                stats={statsByUser.get(user.id) ?? EMPTY_STATS}
                 isCurrentUser={currentUser?.id === user.id}
                 isMenuOpen={openMenuId === user.id}
-                onMenuToggle={() => setOpenMenuId(openMenuId === user.id ? null : user.id)}
+                onMenuToggle={handleMenuToggle}
                 onAction={handleAction}
-                menuRef={menuRef}
               />
             ))
           )}
@@ -273,12 +237,10 @@ export default function UsersPage() {
 
       {/* Add Member Modal */}
       <AnimatePresence>
-        {showAddModal && (
-          <AddMemberModal onClose={() => setShowAddModal(false)} />
-        )}
+        {showAddModal && <AddMemberModal onClose={() => setShowAddModal(false)} />}
       </AnimatePresence>
 
-      {/* Action Modals (View Profile, Edit, Message, Assign) */}
+      {/* Action Modals */}
       <AnimatePresence>
         {actionModal && (
           <ActionModal
@@ -293,19 +255,28 @@ export default function UsersPage() {
 }
 
 // User Card Component
-function UserCard({ user, tasks, isCurrentUser, isMenuOpen, onMenuToggle, onAction, menuRef }) {
-  const userTasks = tasks.filter((t) => t.assigneeId === user.id);
-  const doneTasks = userTasks.filter((t) => t.status === "done").length;
-  const inProgressTasks = userTasks.filter((t) => t.status === "in_progress").length;
-  const completionRate = userTasks.length
-    ? Math.round((doneTasks / userTasks.length) * 100)
-    : 0;
+const UserCard = memo(function UserCard({ user, stats, isCurrentUser, isMenuOpen, onMenuToggle, onAction, ref }) {
+  const menuRef = useRef(null);
+  const { total, done, inProgress } = stats;
+  const completionRate = total ? Math.round((done / total) * 100) : 0;
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        onMenuToggle(user.id);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isMenuOpen, onMenuToggle, user.id]);
 
   const RoleIcon = getRoleIcon(user.role);
   const roleGradient = getRoleColor(user.role);
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -313,42 +284,34 @@ function UserCard({ user, tasks, isCurrentUser, isMenuOpen, onMenuToggle, onActi
       whileHover={{ y: -2 }}
       className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden"
     >
-      {/* Compact Header */}
       <div className={`relative h-16 bg-gradient-to-r ${roleGradient}`}>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30" />
         {isCurrentUser && (
-          <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-white/25 backdrop-blur-sm text-white text-[10px] font-medium">
+          <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-white/25 text-white text-[10px] font-medium">
             You
           </span>
         )}
       </div>
 
-      {/* Avatar */}
       <div className="relative px-4 -mt-8">
-        <div
-          className={`w-16 h-16 rounded-xl bg-gradient-to-br ${roleGradient} border-4 border-white dark:border-slate-800 shadow-lg flex items-center justify-center text-white text-xl font-bold`}
-        >
+        <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${roleGradient} border-4 border-white dark:border-slate-800 shadow-lg flex items-center justify-center text-white text-xl font-bold`}>
           {user.avatar || user.name.charAt(0)}
         </div>
       </div>
 
-      {/* Card Body */}
       <div className="p-4">
         <div className="flex items-start justify-between mb-3">
           <div className="min-w-0 flex-1">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white truncate">
-              {user.name}
-            </h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white truncate">{user.name}</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5 truncate">
               <Mail className="w-3 h-3 flex-shrink-0" />
               <span className="truncate">{user.email}</span>
             </p>
           </div>
 
-          {/* 3-Dot Menu */}
           <div className="relative" ref={menuRef}>
             <button
-              onClick={onMenuToggle}
+              onClick={() => onMenuToggle(user.id)}
               className={`p-1.5 rounded-lg transition-colors ${
                 isMenuOpen
                   ? "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
@@ -367,126 +330,74 @@ function UserCard({ user, tasks, isCurrentUser, isMenuOpen, onMenuToggle, onActi
                   transition={{ duration: 0.1 }}
                   className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-30"
                 >
-                  <MenuItem
-                    icon={<Eye className="w-4 h-4" />}
-                    label="View Profile"
-                    onClick={() => onAction("view", user)}
-                  />
-                  <MenuItem
-                    icon={<Edit2 className="w-4 h-4" />}
-                    label="Edit Profile"
-                    onClick={() => onAction("edit", user)}
-                  />
-                  <MenuItem
-                    icon={<MessageSquare className="w-4 h-4" />}
-                    label="Send Message"
-                    onClick={() => onAction("message", user)}
-                  />
-                  <MenuItem
-                    icon={<UserPlus className="w-4 h-4" />}
-                    label="Assign Task"
-                    onClick={() => onAction("assign", user)}
-                  />
+                  <MenuItem icon={<Eye className="w-4 h-4" />} label="View Profile" onClick={() => onAction("view", user)} />
+                  <MenuItem icon={<Edit2 className="w-4 h-4" />} label="Edit Profile" onClick={() => onAction("edit", user)} />
+                  <MenuItem icon={<MessageSquare className="w-4 h-4" />} label="Send Message" onClick={() => onAction("message", user)} />
+                  <MenuItem icon={<UserPlus className="w-4 h-4" />} label="Assign Task" onClick={() => onAction("assign", user)} />
                   <div className="border-t border-slate-100 dark:border-slate-700" />
-                  <MenuItem
-                    icon={<Trash2 className="w-4 h-4" />}
-                    label="Remove"
-                    onClick={() => onAction("remove", user)}
-                    danger
-                  />
+                  <MenuItem icon={<Trash2 className="w-4 h-4" />} label="Remove" onClick={() => onAction("remove", user)} danger />
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
         </div>
 
-        {/* Role Badge */}
         <div className="mb-3">
-          <span
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gradient-to-r ${roleGradient} text-white text-[11px] font-semibold shadow-sm`}
-          >
+          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gradient-to-r ${roleGradient} text-white text-[11px] font-semibold shadow-sm`}>
             <RoleIcon className="w-3 h-3" />
             {ROLE_LABELS[user.role]}
           </span>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-2 mb-3">
           <div className="text-center p-2 rounded-lg bg-slate-50 dark:bg-slate-700/50">
-            <p className="text-base font-bold text-slate-900 dark:text-white tabular-nums">
-              {userTasks.length}
-            </p>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              Total
-            </p>
+            <p className="text-base font-bold text-slate-900 dark:text-white tabular-nums">{total}</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total</p>
           </div>
           <div className="text-center p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20">
-            <p className="text-base font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
-              {doneTasks}
-            </p>
-            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-              Done
-            </p>
+            <p className="text-base font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{done}</p>
+            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Done</p>
           </div>
           <div className="text-center p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20">
-            <p className="text-base font-bold text-blue-600 dark:text-blue-400 tabular-nums">
-              {inProgressTasks}
-            </p>
-            <p className="text-[10px] text-blue-600 dark:text-blue-400 uppercase tracking-wider">
-              Active
-            </p>
+            <p className="text-base font-bold text-blue-600 dark:text-blue-400 tabular-nums">{inProgress}</p>
+            <p className="text-[10px] text-blue-600 dark:text-blue-400 uppercase tracking-wider">Active</p>
           </div>
         </div>
 
-        {/* Progress Bar */}
         <div className="mb-3">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-              Completion
-            </span>
-            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 tabular-nums">
-              {completionRate}%
-            </span>
+            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Completion</span>
+            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 tabular-nums">{completionRate}%</span>
           </div>
-          <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${completionRate}%` }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className={`h-full bg-gradient-to-r ${roleGradient} rounded-full`}
-            />
-          </div>
+          <ProgressBar
+            value={completionRate}
+            trackClassName="h-1.5 bg-slate-100 dark:bg-slate-700"
+            barClassName={`bg-gradient-to-r ${roleGradient}`}
+          />
         </div>
 
-        {/* Performance Badge */}
         {completionRate >= 80 && (
           <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
             <Award className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
-              Top Performer
-            </span>
+            <span className="text-[11px] font-medium text-emerald-700 dark:text-emerald-400">Top Performer</span>
           </div>
         )}
         {completionRate >= 50 && completionRate < 80 && (
           <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
             <Target className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-            <span className="text-[11px] font-medium text-blue-700 dark:text-blue-400">
-              On Track
-            </span>
+            <span className="text-[11px] font-medium text-blue-700 dark:text-blue-400">On Track</span>
           </div>
         )}
-        {completionRate < 50 && userTasks.length > 0 && (
+        {completionRate < 50 && total > 0 && (
           <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
             <Zap className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-            <span className="text-[11px] font-medium text-amber-700 dark:text-amber-400">
-              Needs Attention
-            </span>
+            <span className="text-[11px] font-medium text-amber-700 dark:text-amber-400">Needs Attention</span>
           </div>
         )}
       </div>
     </motion.div>
   );
-}
+});
 
 // Menu Item Component
 function MenuItem({ icon, label, onClick, danger = false }) {

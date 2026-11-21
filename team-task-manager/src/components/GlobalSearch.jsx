@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useDeferredValue, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, X, Command, FolderKanban, CheckCircle2, Users } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../context/AppContext";
 import { useCommandPalette } from "../context/CommandPaletteContext";
 
-export default function GlobalSearch() {
+function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef(null);
@@ -29,19 +29,20 @@ export default function GlobalSearch() {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
 
-  const results = query.trim()
-    ? {
-        projects: projects.filter((p) =>
-          p.title.toLowerCase().includes(query.toLowerCase())
-        ),
-        tasks: tasks.filter((t) =>
-          t.title.toLowerCase().includes(query.toLowerCase())
-        ),
-        users: users.filter((u) =>
-          u.name.toLowerCase().includes(query.toLowerCase())
-        ),
-      }
-    : { projects: [], tasks: [], users: [] };
+  useEffect(() => {
+    if (!open) setQuery("");
+  }, [open]);
+
+  const deferredQuery = useDeferredValue(query);
+  const results = useMemo(() => {
+    const q = deferredQuery.trim().toLowerCase();
+    if (!q) return { projects: [], tasks: [], users: [] };
+    return {
+      projects: projects.filter((p) => p.title.toLowerCase().includes(q)),
+      tasks: tasks.filter((t) => t.title.toLowerCase().includes(q)),
+      users: users.filter((u) => u.name.toLowerCase().includes(q)),
+    };
+  }, [deferredQuery, projects, tasks, users]);
 
   const totalResults =
     results.projects.length + results.tasks.length + results.users.length;
@@ -188,3 +189,4 @@ export default function GlobalSearch() {
     </>
   );
 }
+export default memo(GlobalSearch);

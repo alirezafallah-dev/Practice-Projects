@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useMemo,
   useRef,
   useState,
   useEffect,
@@ -10,6 +11,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, X } from "lucide-react";
 
 const ConfirmDialogContext = createContext(null);
+
+// Variant styles
+const getVariantStyles = (variant) => {
+  switch (variant) {
+    case "danger":
+      return {
+        icon: "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400",
+        button: "bg-red-600 hover:bg-red-700 text-white shadow-red-500/20",
+      };
+    case "warning":
+      return {
+        icon: "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400",
+        button: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/20",
+      };
+    default:
+      return {
+        icon: "bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400",
+        button: "bg-brand-600 hover:bg-brand-700 text-white shadow-brand-500/20",
+      };
+  }
+};
 
 export function ConfirmDialogProvider({ children }) {
   const [dialog, setDialog] = useState({
@@ -23,6 +45,14 @@ export function ConfirmDialogProvider({ children }) {
 
   const resolveRef = useRef(null);
 
+  const closeDialog = useCallback((result) => {
+    if (resolveRef.current) {
+      resolveRef.current(result);
+      resolveRef.current = null;
+    }
+    setDialog((prev) => ({ ...prev, isOpen: false }));
+  }, []);
+
   // Close with ESC key
   useEffect(() => {
     const handleEsc = (e) => {
@@ -32,22 +62,11 @@ export function ConfirmDialogProvider({ children }) {
     };
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
-  }, [dialog.isOpen]);
-
-  const closeDialog = useCallback((result) => {
-    if (resolveRef.current) {
-      resolveRef.current(result);
-      resolveRef.current = null;
-    }
-    setDialog((prev) => ({ ...prev, isOpen: false }));
-  }, []);
+  }, [dialog.isOpen, closeDialog]);
 
   const confirm = useCallback((options) => {
     // Support both string and object arguments
-    const config =
-      typeof options === "string"
-        ? { message: options }
-        : options;
+    const config = typeof options === "string" ? { message: options } : options;
 
     return new Promise((resolve) => {
       if (resolveRef.current) {
@@ -66,31 +85,13 @@ export function ConfirmDialogProvider({ children }) {
     });
   }, []);
 
-  // Variant styles
-  const getVariantStyles = (variant) => {
-    switch (variant) {
-      case "danger":
-        return {
-          icon: "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400",
-          button: "bg-red-600 hover:bg-red-700 text-white shadow-red-500/20",
-        };
-      case "warning":
-        return {
-          icon: "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400",
-          button: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/20",
-        };
-      default:
-        return {
-          icon: "bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400",
-          button: "bg-brand-600 hover:bg-brand-700 text-white shadow-brand-500/20",
-        };
-    }
-  };
+  // ✅ همین خط باعث ارور شده بود — حالا useMemo هم import شده
+  const value = useMemo(() => ({ confirm }), [confirm]);
 
   const styles = getVariantStyles(dialog.variant);
 
   return (
-    <ConfirmDialogContext.Provider value={{ confirm }}>
+    <ConfirmDialogContext.Provider value={value}>
       {children}
 
       <AnimatePresence>
@@ -170,9 +171,7 @@ export function ConfirmDialogProvider({ children }) {
 export function useConfirm() {
   const context = useContext(ConfirmDialogContext);
   if (!context) {
-    throw new Error(
-      "useConfirm must be used within a ConfirmDialogProvider"
-    );
+    throw new Error("useConfirm must be used within a ConfirmDialogProvider");
   }
   return context.confirm;
 }

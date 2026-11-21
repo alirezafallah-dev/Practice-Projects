@@ -1,12 +1,14 @@
+import { lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Layout from "./components/Layout.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
-import DashboardPage from "./pages/DashboardPage.jsx";
-import ProjectsPage from "./pages/ProjectsPage.jsx";
-import ProjectDetailPage from "./pages/ProjectDetailPage.jsx";
-import UsersPage from "./pages/UsersPage.jsx";
+
+const DashboardPage = lazy(() => import("./pages/DashboardPage.jsx"));
+const ProjectsPage = lazy(() => import("./pages/ProjectsPage.jsx"));
+const ProjectDetailPage = lazy(() => import("./pages/ProjectDetailPage.jsx"));
+const UsersPage = lazy(() => import("./pages/UsersPage.jsx"));
 
 export default function App() {
   return (

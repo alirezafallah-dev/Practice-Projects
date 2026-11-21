@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext.jsx";
 import {
@@ -19,6 +19,8 @@ import {
   PauseCircle,
   PlayCircle,
 } from "lucide-react";
+import { useConfirm } from "../context/ConfirmDialogContext.jsx";
+import ProgressBar from "../components/ProgressBar.jsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { PROJECT_STATUS_LABELS } from "../constants";
 import { formatDate } from "../utils/date.js";
@@ -31,91 +33,71 @@ export default function ProjectsPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const { toast } = useToast();
+  const confirm = useConfirm();
 
-  // Filter and search projects
   const filteredProjects = useMemo(() => {
+    const q = searchQuery.toLowerCase();
     return projects.filter((project) => {
       const matchesSearch =
-        project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus =
-        statusFilter === "all" || project.status === statusFilter;
+        project.title.toLowerCase().includes(q) ||
+        project.description.toLowerCase().includes(q);
+      const matchesStatus = statusFilter === "all" || project.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
   }, [projects, searchQuery, statusFilter]);
 
-  // Project stats
-  const stats = useMemo(() => {
-    return {
-      total: projects.length,
-      active: projects.filter((p) => p.status === "active").length,
-      planning: projects.filter((p) => p.status === "planning").length,
-      completed: projects.filter((p) => p.status === "completed").length,
-    };
-  }, [projects]);
+  const stats = useMemo(() => ({
+    total: projects.length,
+    active: projects.filter((p) => p.status === "active").length,
+    planning: projects.filter((p) => p.status === "planning").length,
+    completed: projects.filter((p) => p.status === "completed").length,
+  }), [projects]);
+
+  // یک‌بار محاسبه برای همه کارت‌ها — به‌جای filter per-card per-render
+  const projectMeta = useMemo(() => {
+    const map = new Map();
+    for (const p of projects) {
+      const pt = tasks.filter((t) => t.projectId === p.id);
+      const done = pt.filter((t) => t.status === "done").length;
+      map.set(p.id, {
+        total: pt.length,
+        done,
+        progress: pt.length ? Math.round((done / pt.length) * 100) : p.progress || 0,
+        members: users.filter((u) => p.members?.includes(u.id)),
+      });
+    }
+    return map;
+  }, [projects, tasks, users]);
+
+  const handleDelete = useCallback(async (id) => {
+    const ok = await confirm({
+      title: "Delete Project",
+      message: "Are you sure you want to delete this project?",
+      confirmLabel: "Delete",
+      variant: "danger",
+    });
+    if (ok) {
+      deleteProject(id);
+      toast.success("Project deleted successfully");
+    }
+  }, [confirm, deleteProject, toast]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05 },
-    },
+    visible: { opacity: 1, transition: { staggerChildren: 0.04 } },
   };
-
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case "active":
-        return <PlayCircle className="w-4 h-4" />;
-      case "planning":
-        return <Clock className="w-4 h-4" />;
-      case "on_hold":
-        return <PauseCircle className="w-4 h-4" />;
-      case "completed":
-        return <CheckCircle2 className="w-4 h-4" />;
-      default:
-        return <AlertCircle className="w-4 h-4" />;
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "active":
-        return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
-      case "planning":
-        return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
-      case "on_hold":
-        return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
-      case "completed":
-        return "bg-slate-100 text-slate-700 dark:bg-slate-700/30 dark:text-slate-300";
-      default:
-        return "bg-slate-100 text-slate-700";
-    }
+    hidden: { opacity: 0, y: 8 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: "easeOut" } },
   };
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
       {/* Header */}
-      <motion.div
-        variants={itemVariants}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-      >
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-            Projects
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
-            Manage and track all your team projects
-          </p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Projects</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Manage and track all your team projects</p>
         </div>
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -129,34 +111,11 @@ export default function ProjectsPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div
-        variants={itemVariants}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
-      >
-        <StatMini
-          label="Total Projects"
-          value={stats.total}
-          icon={<FolderKanban className="w-5 h-5" />}
-          color="bg-blue-500"
-        />
-        <StatMini
-          label="Active"
-          value={stats.active}
-          icon={<PlayCircle className="w-5 h-5" />}
-          color="bg-emerald-500"
-        />
-        <StatMini
-          label="Planning"
-          value={stats.planning}
-          icon={<Clock className="w-5 h-5" />}
-          color="bg-purple-500"
-        />
-        <StatMini
-          label="Completed"
-          value={stats.completed}
-          icon={<CheckCircle2 className="w-5 h-5" />}
-          color="bg-slate-500"
-        />
+      <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatMini label="Total Projects" value={stats.total} icon={<FolderKanban className="w-5 h-5" />} color="bg-blue-500" />
+        <StatMini label="Active" value={stats.active} icon={<PlayCircle className="w-5 h-5" />} color="bg-emerald-500" />
+        <StatMini label="Planning" value={stats.planning} icon={<Clock className="w-5 h-5" />} color="bg-purple-500" />
+        <StatMini label="Completed" value={stats.completed} icon={<CheckCircle2 className="w-5 h-5" />} color="bg-slate-500" />
       </motion.div>
 
       {/* Search and Filters */}
@@ -194,21 +153,19 @@ export default function ProjectsPage() {
               className="overflow-hidden"
             >
               <div className="flex flex-wrap gap-2 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-                {["all", "active", "planning", "on_hold", "completed"].map(
-                  (status) => (
-                    <button
-                      key={status}
-                      onClick={() => setStatusFilter(status)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                        statusFilter === status
-                          ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
-                          : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
-                      }`}
-                    >
-                      {status === "all" ? "All" : PROJECT_STATUS_LABELS[status]}
-                    </button>
-                  )
-                )}
+                {["all", "active", "planning", "on_hold", "completed"].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      statusFilter === status
+                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
+                        : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+                    }`}
+                  >
+                    {status === "all" ? "All" : PROJECT_STATUS_LABELS[status]}
+                  </button>
+                ))}
               </div>
             </motion.div>
           )}
@@ -216,10 +173,7 @@ export default function ProjectsPage() {
       </motion.div>
 
       {/* Projects Grid */}
-      <motion.div
-        variants={itemVariants}
-        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-      >
+      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <AnimatePresence mode="popLayout">
           {filteredProjects.length === 0 ? (
             <motion.div
@@ -229,9 +183,7 @@ export default function ProjectsPage() {
               className="col-span-full flex flex-col items-center justify-center py-16 text-center"
             >
               <FolderKanban className="w-16 h-16 text-slate-300 dark:text-slate-600 mb-4" />
-              <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                No projects found
-              </h3>
+              <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">No projects found</h3>
               <p className="text-slate-500 dark:text-slate-400 mb-6">
                 {searchQuery || statusFilter !== "all"
                   ? "Try adjusting your filters"
@@ -250,14 +202,8 @@ export default function ProjectsPage() {
               <ProjectCard
                 key={project.id}
                 project={project}
-                tasks={tasks}
-                users={users}
-                onDelete={(id) => {
-                  if (confirm("Are you sure you want to delete this project?")) {
-                    deleteProject(id);
-                    toast.success("Project deleted successfully"); // ✨
-                  }
-                }}
+                meta={projectMeta.get(project.id)}
+                onDelete={handleDelete}
               />
             ))
           )}
@@ -279,46 +225,22 @@ export default function ProjectsPage() {
 }
 
 // Project Card Component
-function ProjectCard({ project, tasks, users, onDelete }) {
-  const projectTasks = tasks.filter((t) => t.projectId === project.id);
-  const doneTasks = projectTasks.filter((t) => t.status === "done").length;
-  const progress = projectTasks.length
-    ? Math.round((doneTasks / projectTasks.length) * 100)
-    : project.progress || 0;
-  const projectMembers = users.filter((u) => project.members?.includes(u.id));
+const getStatusIcon = (status) => {
+  switch (status) {
+    case "active": return <PlayCircle className="w-4 h-4" />;
+    case "planning": return <Clock className="w-4 h-4" />;
+    case "on_hold": return <PauseCircle className="w-4 h-4" />;
+    case "completed": return <CheckCircle2 className="w-4 h-4" />;
+    default: return <AlertCircle className="w-4 h-4" />;
+  }
+};
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case "active":
-        return <PlayCircle className="w-4 h-4" />;
-      case "planning":
-        return <Clock className="w-4 h-4" />;
-      case "on_hold":
-        return <PauseCircle className="w-4 h-4" />;
-      case "completed":
-        return <CheckCircle2 className="w-4 h-4" />;
-      default:
-        return <AlertCircle className="w-4 h-4" />;
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "active":
-        return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
-      case "planning":
-        return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
-      case "on_hold":
-        return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
-      case "completed":
-        return "bg-slate-100 text-slate-700 dark:bg-slate-700/30 dark:text-slate-300";
-      default:
-        return "bg-slate-100 text-slate-700";
-    }
-  };
+const ProjectCard = memo(function ProjectCard({ project, meta, onDelete, ref }) {
+  const { total, done, progress, members } = meta;
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -330,18 +252,11 @@ function ProjectCard({ project, tasks, users, onDelete }) {
         to={`/projects/${project.id}`}
         className="block h-full bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-300 group"
       >
-        {/* Card Header with Gradient */}
-        <div
-          className={`relative h-32 bg-gradient-to-br ${
-            project.color || "from-blue-500 to-purple-600"
-          } p-6 overflow-hidden`}
-        >
+        <div className={`relative h-32 bg-gradient-to-br ${project.color || "from-blue-500 to-purple-600"} p-6 overflow-hidden`}>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-40" />
           <div className="relative flex items-start justify-between">
             <div className="flex-1">
-              <div
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs font-medium mb-2`}
-              >
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-medium mb-2">
                 {getStatusIcon(project.status)}
                 {PROJECT_STATUS_LABELS[project.status]}
               </div>
@@ -352,48 +267,31 @@ function ProjectCard({ project, tasks, users, onDelete }) {
           </div>
         </div>
 
-        {/* Card Body */}
         <div className="p-6">
           <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 min-h-[40px]">
             {project.description}
           </p>
 
-          {/* Progress Bar */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                Progress
-              </span>
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {progress}%
-              </span>
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Progress</span>
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{progress}%</span>
             </div>
-            <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className={`h-full bg-gradient-to-r ${
-                  project.color || "from-blue-500 to-purple-600"
-                } rounded-full`}
-              />
-            </div>
+            <ProgressBar
+              value={progress}
+              barClassName={`bg-gradient-to-r ${project.color || "from-blue-500 to-purple-600"}`}
+            />
           </div>
 
-          {/* Stats Row */}
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
                 <FolderKanban className="w-4 h-4" />
-                <span>
-                  {doneTasks}/{projectTasks.length} tasks
-                </span>
+                <span>{done}/{total} tasks</span>
               </div>
             </div>
-
-            {/* Team Avatars */}
             <div className="flex -space-x-2">
-              {projectMembers.slice(0, 3).map((member) => (
+              {members.slice(0, 3).map((member) => (
                 <div
                   key={member.id}
                   className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 border-2 border-white dark:border-slate-800 flex items-center justify-center text-white text-xs font-semibold"
@@ -402,9 +300,9 @@ function ProjectCard({ project, tasks, users, onDelete }) {
                   {member.avatar || member.name.charAt(0)}
                 </div>
               ))}
-              {projectMembers.length > 3 && (
+              {members.length > 3 && (
                 <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-600 border-2 border-white dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 text-xs font-semibold">
-                  +{projectMembers.length - 3}
+                  +{members.length - 3}
                 </div>
               )}
             </div>
@@ -413,7 +311,7 @@ function ProjectCard({ project, tasks, users, onDelete }) {
       </Link>
     </motion.div>
   );
-}
+});
 
 // Stat Mini Component
 function StatMini({ label, value, icon, color }) {
@@ -449,6 +347,8 @@ function AddProjectModal({ onClose, onAdd, users }) {
     color: "from-blue-500 to-purple-600",
   });
 
+  const { toast } = useToast();
+  
   const colorOptions = [
     "from-blue-500 to-cyan-500",
     "from-purple-500 to-pink-500",

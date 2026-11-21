@@ -1,7 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext.jsx";
-import { useCommandPalette } from "../context/CommandPaletteContext.jsx";
+import { useConfirm } from "../context/ConfirmDialogContext.jsx";
+import { useConfetti } from "../context/ConfettiContext.jsx";
+import ProgressBar from "../components/ProgressBar.jsx";
 import {
   ArrowLeft,
   Plus,
@@ -70,36 +72,27 @@ const COLUMNS = [
 export default function ProjectDetailPage() {
   const { projectId } = useParams();
   const navigate = useNavigate();
-  const {
-    projects,
-    tasks,
-    users,
-    updateTask,
-    addTask,
-    deleteTask,
-    deleteProject,
-    updateProject,
-  } = useApp();
+  const { projects, tasks, users, updateTask, addTask, deleteTask, deleteProject } = useApp();
   const { toast } = useToast();
-  const { triggerConfetti } = useCommandPalette();
+  const { triggerConfetti } = useConfetti();
+  const confirm = useConfirm();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [draggedTask, setDraggedTask] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
-  const [filter, setFilter] = useState("all");
 
   const project = projects.find((p) => p.id === parseInt(projectId));
 
-  const projectTasks = useMemo(() => {
-    return tasks.filter((t) => t.projectId === parseInt(projectId));
-  }, [tasks, projectId]);
-
-  const projectMembers = useMemo(() => {
-    return users.filter((u) => project?.members?.includes(u.id));
-  }, [users, project]);
-
+  const projectTasks = useMemo(
+    () => tasks.filter((t) => t.projectId === parseInt(projectId)),
+    [tasks, projectId]
+  );
+  const projectMembers = useMemo(
+    () => users.filter((u) => project?.members?.includes(u.id)),
+    [users, project]
+  );
   const stats = useMemo(() => {
     const total = projectTasks.length;
     const done = projectTasks.filter((t) => t.status === "done").length;
@@ -109,6 +102,76 @@ export default function ProjectDetailPage() {
     const dueToday = projectTasks.filter(isDueToday).length;
     return { total, done, inProgress, progress, overdue, dueToday };
   }, [projectTasks]);
+
+  // ---- هندلرهای پایدار (memo کارت‌ها با این‌ها کار می‌کنه) ----
+  const handleEditTask = useCallback((task) => setEditingTask(task), []);
+
+  const handleDeleteTask = useCallback(async (taskId) => {
+    const ok = await confirm({
+      title: "Delete Task",
+      message: "Are you sure you want to delete this task?",
+      confirmLabel: "Delete",
+      variant: "danger",
+    });
+    if (ok) {
+      deleteTask(taskId);
+      toast.success("Task deleted successfully");
+    }
+  }, [confirm, deleteTask, toast]);
+
+  const handleCompleteTask = useCallback((task) => {
+    if (task.status !== "done") {
+      updateTask(task.id, { status: "done" });
+      triggerConfetti();
+      toast.success(`Task "${task.title}" completed! 🎉`);
+    }
+  }, [updateTask, triggerConfetti, toast]);
+
+  const handleDragStart = useCallback((e, taskId) => {
+    setDraggedTask(taskId);
+    e.dataTransfer.effectAllowed = "move";
+  }, []);
+
+  // فقط وقتی ستون واقعاً عوض شد state آپدیت می‌شه
+  const handleDragOver = useCallback((e, columnId) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverColumn((prev) => (prev === columnId ? prev : columnId));
+  }, []);
+
+  // ورود به المان فرزند = dragleave واقعی نیست
+  const handleDragLeave = useCallback((e) => {
+    if (e.currentTarget.contains(e.relatedTarget)) return;
+    setDragOverColumn(null);
+  }, []);
+
+  const handleDrop = (e, columnId) => {
+    e.preventDefault();
+    if (draggedTask) {
+      const task = tasks.find((t) => t.id === draggedTask);
+      updateTask(draggedTask, { status: columnId });
+      if (columnId === "done" && task?.status !== "done") {
+        triggerConfetti();
+        toast.success("Task completed! 🎉");
+      }
+    }
+    setDraggedTask(null);
+    setDragOverColumn(null);
+  };
+
+  const handleDeleteProject = async () => {
+    const ok = await confirm({
+      title: "Delete Project",
+      message: "Are you sure you want to delete this project and all its tasks?",
+      confirmLabel: "Delete",
+      variant: "danger",
+    });
+    if (ok) {
+      deleteProject(project.id);
+      toast.success("Project and all tasks deleted");
+      navigate("/projects");
+    }
+  };
 
   if (!project) {
     return (
@@ -133,63 +196,10 @@ export default function ProjectDetailPage() {
     );
   }
 
-  const handleDragStart = (e, taskId) => {
-    setDraggedTask(taskId);
-    e.dataTransfer.effectAllowed = "move";
-  };
-
-  const handleDragOver = (e, columnId) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    setDragOverColumn(columnId);
-  };
-
-  const handleDragLeave = () => {
-    setDragOverColumn(null);
-  };
-
-  const handleDrop = (e, columnId) => {
-    e.preventDefault();
-    if (draggedTask) {
-      const task = tasks.find((t) => t.id === draggedTask);
-      updateTask(draggedTask, { status: columnId });
-
-      if (columnId === "done" && task?.status !== "done") {
-        triggerConfetti();
-        toast.success("Task completed! 🎉");
-      }
-    }
-    setDraggedTask(null);
-    setDragOverColumn(null);
-  };
-
-  const handleDeleteTask = (taskId) => {
-    if (confirm("Are you sure you want to delete this task?")) {
-      deleteTask(taskId);
-      toast.success("Task deleted successfully");
-    }
-  };
-
-  const handleDeleteProject = () => {
-    if (confirm("Are you sure you want to delete this project and all its tasks?")) {
-      deleteProject(project.id);
-      toast.success("Project and all tasks deleted");
-      navigate("/projects");
-    }
-  };
-
-  const handleCompleteTask = (task) => {
-    if (task.status !== "done") {
-      updateTask(task.id, { status: "done" });
-      triggerConfetti();
-      toast.success(`Task "${task.title}" completed! 🎉`);
-    }
-  };
-
   return (
     <div className="space-y-6">
       {/* Back Navigation */}
-      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25 }}>
         <Link
           to="/projects"
           className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 font-medium transition-colors group"
@@ -199,51 +209,47 @@ export default function ProjectDetailPage() {
         </Link>
       </motion.div>
 
-      {/* Project Header - Modern European Design */}
+      {/* Project Header */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
         className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${project.color} p-8 text-white`}
       >
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl" />
-        </div>
-
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            background:
+              "radial-gradient(600px circle at 100% 0%, rgba(255,255,255,0.4), transparent 60%), radial-gradient(500px circle at 0% 100%, rgba(255,255,255,0.3), transparent 60%)",
+          }}
+        />
         <div className="relative z-10">
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4 flex-wrap">
-                <span className="px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-xs font-medium border border-white/20">
-                  {project.status.charAt(0).toUpperCase() +
-                    project.status.slice(1).replace("_", " ")}
+                <span className="px-3 py-1 rounded-full bg-white/15 text-xs font-medium border border-white/20">
+                  {project.status.charAt(0).toUpperCase() + project.status.slice(1).replace("_", " ")}
                 </span>
                 <span className="text-white/70 text-sm flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5" />
                   Created {formatDate(project.createdAt)}
                 </span>
               </div>
-
-              <h1 className="text-3xl md:text-4xl font-bold mb-3 font-display tracking-tight">
-                {project.title}
-              </h1>
-              <p className="text-white/90 text-base max-w-3xl leading-relaxed">
-                {project.description}
-              </p>
+              <h1 className="text-3xl md:text-4xl font-bold mb-3 font-display tracking-tight">{project.title}</h1>
+              <p className="text-white/90 text-base max-w-3xl leading-relaxed">{project.description}</p>
             </div>
 
-            {/* Action Menu */}
             <div className="flex items-center gap-2">
-              <button className="p-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors" title="Share">
+              <button className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" title="Share">
                 <Share2 className="w-4 h-4" />
               </button>
-              <button className="p-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors" title="Export">
+              <button className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" title="Export">
                 <Download className="w-4 h-4" />
               </button>
               <div className="relative">
                 <button
                   onClick={() => setShowMenu(!showMenu)}
-                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors"
+                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
                 >
                   <MoreVertical className="w-4 h-4" />
                 </button>
@@ -278,18 +284,8 @@ export default function ProjectDetailPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
             <HeaderStat icon={<Target className="w-4 h-4" />} label="Progress" value={`${stats.progress}%`} />
             <HeaderStat icon={<TrendingUp className="w-4 h-4" />} label="Done" value={`${stats.done}/${stats.total}`} />
-            <HeaderStat
-              icon={<AlertCircle className="w-4 h-4" />}
-              label="Overdue"
-              value={stats.overdue}
-              alert={stats.overdue > 0}
-            />
-            <HeaderStat
-              icon={<Clock className="w-4 h-4" />}
-              label="Due Today"
-              value={stats.dueToday}
-              alert={stats.dueToday > 0}
-            />
+            <HeaderStat icon={<AlertCircle className="w-4 h-4" />} label="Overdue" value={stats.overdue} alert={stats.overdue > 0} />
+            <HeaderStat icon={<Clock className="w-4 h-4" />} label="Due Today" value={stats.dueToday} alert={stats.dueToday > 0} />
           </div>
 
           {/* Progress Bar */}
@@ -298,14 +294,7 @@ export default function ProjectDetailPage() {
               <span className="text-white/80">Overall Progress</span>
               <span className="font-semibold font-display">{stats.progress}%</span>
             </div>
-            <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${stats.progress}%` }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-                className="h-full bg-white rounded-full"
-              />
-            </div>
+            <ProgressBar value={stats.progress} trackClassName="h-2 bg-white/20" barClassName="bg-white" duration={0.8} />
           </div>
 
           {/* Team Members */}
@@ -322,7 +311,7 @@ export default function ProjectDetailPage() {
                 </div>
               ))}
               {projectMembers.length > 5 && (
-                <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center text-white text-xs font-semibold">
+                <div className="w-9 h-9 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center text-white text-xs font-semibold">
                   +{projectMembers.length - 5}
                 </div>
               )}
@@ -336,9 +325,9 @@ export default function ProjectDetailPage() {
 
       {/* Kanban Board Header */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+        transition={{ delay: 0.1, duration: 0.25 }}
         className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
       >
         <div>
@@ -349,14 +338,12 @@ export default function ProjectDetailPage() {
             Drag and drop tasks between columns to update their status
           </p>
         </div>
-
         <div className="flex items-center gap-2">
           <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium">
             <Command className="w-3 h-3" />
             <span>K</span>
             <span className="text-slate-400 dark:text-slate-600">Quick actions</span>
           </div>
-
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -373,7 +360,7 @@ export default function ProjectDetailPage() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
+        transition={{ delay: 0.15, duration: 0.25 }}
         className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"
       >
         {COLUMNS.map((column) => {
@@ -392,13 +379,10 @@ export default function ProjectDetailPage() {
                 isOver ? "ring-2 ring-brand-500 bg-brand-50 dark:bg-brand-950/30" : ""
               }`}
             >
-              {/* Column Header */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
                   <div className={`w-2 h-2 rounded-full ${column.dotColor}`} />
-                  <h3 className="font-semibold text-sm text-slate-900 dark:text-white">
-                    {column.label}
-                  </h3>
+                  <h3 className="font-semibold text-sm text-slate-900 dark:text-white">{column.label}</h3>
                   <span className="px-2 py-0.5 rounded-md bg-slate-200/70 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-400 tabular-nums">
                     {columnTasks.length}
                   </span>
@@ -412,7 +396,6 @@ export default function ProjectDetailPage() {
                 </button>
               </div>
 
-              {/* Tasks List */}
               <div className="space-y-3">
                 <AnimatePresence mode="popLayout">
                   {columnTasks.length === 0 ? (
@@ -425,9 +408,7 @@ export default function ProjectDetailPage() {
                         <Icon className="w-5 h-5 text-slate-400" />
                       </div>
                       <p className="text-sm text-slate-400 dark:text-slate-500">No tasks</p>
-                      <p className="text-xs text-slate-400 dark:text-slate-600 mt-1">
-                        Drop tasks here
-                      </p>
+                      <p className="text-xs text-slate-400 dark:text-slate-600 mt-1">Drop tasks here</p>
                     </motion.div>
                   ) : (
                     columnTasks.map((task) => (
@@ -435,10 +416,10 @@ export default function ProjectDetailPage() {
                         key={task.id}
                         task={task}
                         users={users}
-                        onEdit={() => setEditingTask(task)}
-                        onDelete={() => handleDeleteTask(task.id)}
-                        onComplete={() => handleCompleteTask(task)}
-                        onDragStart={(e) => handleDragStart(e, task.id)}
+                        onEdit={handleEditTask}
+                        onDelete={handleDeleteTask}
+                        onComplete={handleCompleteTask}
+                        onDragStart={handleDragStart}
                         isDragging={draggedTask === task.id}
                       />
                     ))
@@ -478,7 +459,6 @@ export default function ProjectDetailPage() {
               const wasNotDone = editingTask.status !== "done";
               updateTask(editingTask.id, taskData);
               setEditingTask(null);
-
               if (wasNotDone && taskData.status === "done") {
                 triggerConfetti();
                 toast.success("Task completed! 🎉");
@@ -494,7 +474,7 @@ export default function ProjectDetailPage() {
 }
 
 // Modern Task Card Component
-function TaskCard({ task, users, onEdit, onDelete, onComplete, onDragStart, isDragging }) {
+const TaskCard = memo(function TaskCard({ task, users, onEdit, onDelete, onComplete, onDragStart, isDragging, ref }) {
   const assignee = users.find((u) => u.id === task.assigneeId);
   const overdue = isOverdue(task);
   const dueToday = isDueToday(task);
@@ -502,33 +482,26 @@ function TaskCard({ task, users, onEdit, onDelete, onComplete, onDragStart, isDr
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, scale: 0.9 }}
-      animate={{
-        opacity: isDragging ? 0.4 : 1,
-        scale: 1,
-        rotate: isDragging ? 2 : 0,
-      }}
+      animate={{ opacity: isDragging ? 0.4 : 1, scale: 1, rotate: isDragging ? 2 : 0 }}
       exit={{ opacity: 0, scale: 0.9 }}
       whileHover={{ y: -2, transition: { duration: 0.15 } }}
       draggable
-      onDragStart={onDragStart}
+      onDragStart={(e) => onDragStart(e, task.id)}
       className={`bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 cursor-grab active:cursor-grabbing hover:shadow-md transition-all group ${
         isDragging ? "opacity-50 shadow-xl" : ""
       } ${isDone ? "opacity-75" : ""}`}
     >
-      {/* Priority & Actions */}
       <div className="flex items-start justify-between mb-3">
-        <span
-          className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider ${PRIORITY_COLORS[task.priority]}`}
-        >
+        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider ${PRIORITY_COLORS[task.priority]}`}>
           <Flag className="w-2.5 h-2.5" />
           {PRIORITY_LABELS[task.priority]}
         </span>
-
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
-            onClick={onComplete}
+            onClick={() => onComplete(task)}
             disabled={isDone}
             className={`p-1.5 rounded-lg transition-all ${
               isDone
@@ -540,14 +513,14 @@ function TaskCard({ task, users, onEdit, onDelete, onComplete, onDragStart, isDr
             <CheckCircle2 className="w-4 h-4" />
           </button>
           <button
-            onClick={onEdit}
+            onClick={() => onEdit(task)}
             className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
             title="Edit"
           >
             <Edit2 className="w-3.5 h-3.5" />
           </button>
           <button
-            onClick={onDelete}
+            onClick={() => onDelete(task.id)}
             className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-red-500 transition-colors"
             title="Delete"
           >
@@ -556,41 +529,31 @@ function TaskCard({ task, users, onEdit, onDelete, onComplete, onDragStart, isDr
         </div>
       </div>
 
-      {/* Title */}
-      <h4
-        className={`font-semibold text-slate-900 dark:text-white text-sm mb-2 line-clamp-2 ${
-          isDone ? "line-through text-slate-400 dark:text-slate-500" : ""
-        }`}
-      >
+      <h4 className={`font-semibold text-slate-900 dark:text-white text-sm mb-2 line-clamp-2 ${isDone ? "line-through text-slate-400 dark:text-slate-500" : ""}`}>
         {task.title}
       </h4>
 
-      {/* Description */}
       {task.description && (
         <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-3 leading-relaxed">
           {task.description}
         </p>
       )}
 
-      {/* Due Date */}
       {task.dueDate && (
-        <div
-          className={`inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md mb-3 ${
-            overdue && !isDone
-              ? "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400"
-              : dueToday && !isDone
-              ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400"
-              : isDone
-              ? "bg-slate-50 text-slate-400 dark:bg-slate-700/30 dark:text-slate-500"
-              : "bg-slate-50 text-slate-600 dark:bg-slate-700 dark:text-slate-400"
-          }`}
-        >
+        <div className={`inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md mb-3 ${
+          overdue && !isDone
+            ? "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400"
+            : dueToday && !isDone
+            ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400"
+            : isDone
+            ? "bg-slate-50 text-slate-400 dark:bg-slate-700/30 dark:text-slate-500"
+            : "bg-slate-50 text-slate-600 dark:bg-slate-700 dark:text-slate-400"
+        }`}>
           <Calendar className="w-3 h-3" />
           {overdue && !isDone ? "Overdue" : dueToday && !isDone ? "Due today" : formatDate(task.dueDate)}
         </div>
       )}
 
-      {/* Footer */}
       <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/50">
         {assignee ? (
           <div className="flex items-center gap-2">
@@ -607,12 +570,11 @@ function TaskCard({ task, users, onEdit, onDelete, onComplete, onDragStart, isDr
             <span>Unassigned</span>
           </div>
         )}
-
         <GripVertical className="w-4 h-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
     </motion.div>
   );
-}
+});
 
 // Modern Header Stat Component
 function HeaderStat({ icon, label, value, alert }) {

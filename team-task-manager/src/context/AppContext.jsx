@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
 
 const AppContext = createContext(null);
 
@@ -289,158 +289,109 @@ const mockTasks = [
 
 export function AppProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(() => {
-    const saved = localStorage.getItem("currentUser");
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem("currentUser");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
   const [users, setUsers] = useState(mockUsers);
   const [projects, setProjects] = useState(mockProjects);
   const [tasks, setTasks] = useState(mockTasks);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
-  const login = ({ email, password }) => {
-    const user = mockUsers.find(
-      (u) => u.email === email && u.password === password
-    );
-
-    if (!user) {
-      return { ok: false, error: "Invalid email or password" };
-    }
-
+  const login = useCallback(({ email, password }) => {
+    const user = mockUsers.find((u) => u.email === email && u.password === password);
+    if (!user) return { ok: false, error: "Invalid email or password" };
     const userWithoutPassword = { ...user };
     delete userWithoutPassword.password;
     setCurrentUser(userWithoutPassword);
     localStorage.setItem("currentUser", JSON.stringify(userWithoutPassword));
     return { ok: true, user: userWithoutPassword };
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setCurrentUser(null);
     localStorage.removeItem("currentUser");
-  };
+  }, []);
 
-  const register = ({ name, email, password, role }) => {
+  const register = useCallback(({ name, email, password, role }) => {
     if (mockUsers.some((u) => u.email === email)) {
       return { ok: false, error: "Email already exists" };
     }
-
     const newUser = {
       id: Date.now(),
       name,
       email,
       role: role || "developer",
-      avatar: name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2),
+      avatar: name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2),
     };
     setUsers((prev) => [...prev, newUser]);
     mockUsers.push({ ...newUser, password });
     return { ok: true, user: newUser };
-  };
+  }, []);
 
-  const updateUser = (userId, updates) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, ...updates } : u))
-    );
-  };
+  const updateUser = useCallback((userId, updates) => {
+    setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, ...updates } : u)));
+  }, []);
 
-  const deleteUser = (userId) => {
+  const deleteUser = useCallback((userId) => {
     setUsers((prev) => prev.filter((u) => u.id !== userId));
-    // تسک‌های این کاربر رو unassign کن
     setTasks((prev) =>
-      prev.map((t) =>
-        t.assigneeId === userId ? { ...t, assigneeId: null } : t
-      )
+      prev.map((t) => (t.assigneeId === userId ? { ...t, assigneeId: null } : t))
     );
-  };
+  }, []);
 
-  const addProject = (project) => {
-    const newProject = {
-      id: Date.now(),
-      ...project,
-      progress: 0,
-      createdAt: new Date().toISOString(),
-    };
+  const addProject = useCallback((project) => {
+    const newProject = { id: Date.now(), ...project, progress: 0, createdAt: new Date().toISOString() };
     setProjects((prev) => [...prev, newProject]);
     return newProject;
-  };
+  }, []);
 
-  const updateProject = (projectId, updates) => {
-    setProjects((prev) =>
-      prev.map((p) => (p.id === projectId ? { ...p, ...updates } : p))
-    );
-  };
+  const updateProject = useCallback((projectId, updates) => {
+    setProjects((prev) => prev.map((p) => (p.id === projectId ? { ...p, ...updates } : p)));
+  }, []);
 
-  const deleteProject = (projectId) => {
+  const deleteProject = useCallback((projectId) => {
     setProjects((prev) => prev.filter((p) => p.id !== projectId));
     setTasks((prev) => prev.filter((t) => t.projectId !== projectId));
-  };
+  }, []);
 
-  const addTask = (task) => {
-    const newTask = {
-      id: Date.now(),
-      ...task,
-      createdAt: new Date().toISOString(),
-    };
+  const addTask = useCallback((task) => {
+    const newTask = { id: Date.now(), ...task, createdAt: new Date().toISOString() };
     setTasks((prev) => [...prev, newTask]);
     return newTask;
-  };
+  }, []);
 
-  const updateTask = (taskId, updates) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
-    );
-  };
+  const updateTask = useCallback((taskId, updates) => {
+    setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t)));
+  }, []);
 
-  const deleteTask = (taskId) => {
+  const deleteTask = useCallback((taskId) => {
     setTasks((prev) => prev.filter((t) => t.id !== taskId));
-  };
+  }, []);
 
-  const getProjectTasks = (projectId) => {
-    return tasks.filter((t) => t.projectId === projectId);
-  };
-
-  const getProjectProgress = (projectId) => {
-    const projectTasks = getProjectTasks(projectId);
-    if (projectTasks.length === 0) return 0;
-    const done = projectTasks.filter((t) => t.status === "done").length;
-    return Math.round((done / projectTasks.length) * 100);
-  };
-
-  return (
-    <AppContext.Provider
-      value={{
-        currentUser,
-        users,
-        projects,
-        tasks,
-        loading,
-        login,
-        logout,
-        register,
-        updateUser,
-        deleteUser,
-        addProject,
-        updateProject,
-        deleteProject,
-        addTask,
-        updateTask,
-        deleteTask,
-        getProjectTasks,
-        getProjectProgress,
-      }}
-    >
-      {children}
-    </AppContext.Provider>
+  const value = useMemo(
+    () => ({
+      currentUser, users, projects, tasks, loading,
+      login, logout, register, updateUser, deleteUser,
+      addProject, updateProject, deleteProject,
+      addTask, updateTask, deleteTask,
+    }),
+    [
+      currentUser, users, projects, tasks, loading,
+      login, logout, register, updateUser, deleteUser,
+      addProject, updateProject, deleteProject,
+      addTask, updateTask, deleteTask,
+    ]
   );
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
 export function useApp() {
   const context = useContext(AppContext);
-  if (!context) {
-    throw new Error("useApp must be used within AppProvider");
-  }
+  if (!context) throw new Error("useApp must be used within AppProvider");
   return context;
 }

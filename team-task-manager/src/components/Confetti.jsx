@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
-import { useCommandPalette } from "../context/CommandPaletteContext";
+import { useConfetti } from "../context/ConfettiContext";
 
 // Simple confetti without external library
 export default function Confetti() {
-  const { showConfetti } = useCommandPalette();
+  const { showConfetti } = useConfetti();
   const canvasRef = useRef(null);
 
   useEffect(() => {
